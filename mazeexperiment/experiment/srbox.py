@@ -35,6 +35,8 @@ class SRBox():
         return self.port
 
     def _signal(self, byte):
+        if type(byte) is int:
+            byte = chr(int)
         return self._box.write(byte)
 
     def _read(self):
@@ -114,7 +116,7 @@ class SRBox():
             if light:
                 status += self._light_codes[i]
 
-        self._box.write(ord(status))
+        self._signal(chr(status))
 
     def set_light(self, light, on, update=False):
         self._lights[light-1] = on
