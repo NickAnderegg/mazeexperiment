@@ -94,7 +94,7 @@ class SRBox():
         if abs(pressed[-1][0] - (current_time-start_time)) > 0.00125:
             pressed.append((current_time-start_time, self.keys_pressed(last_keys)))
 
-        return pressed
+        return presseds
 
     def _keys_pressed(self, keys):
         pressed = []
