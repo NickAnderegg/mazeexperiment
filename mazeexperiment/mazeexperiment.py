@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 
@@ -25,17 +25,19 @@
 # SOFTWARE.
 
 #add correct version number here
-__version__ = "0.0.1"
+__version__ = "1.0.0"
 
 
-PROGRAMNAME="mazeexperiment"
-VERSION=__version__
-COPYRIGHT="(C) 2016 Your Name"
+#PROGRAMNAME="mazeexperiment"
+#VERSION=__version__
+#COPYRIGHT="(C) 2016 Your Name"
 
 import experiment
+import os, sys
 
 def main():
-    experiment.Experiment()
+    exp_pwd = os.path.dirname(os.path.abspath(__file__)).decode(sys.getfilesystemencoding())
+    experiment.Experiment(pwd=exp_pwd)
 
 if __name__ == "__main__":
     main()
