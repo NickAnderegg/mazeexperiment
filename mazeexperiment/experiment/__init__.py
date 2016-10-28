@@ -14,6 +14,7 @@ from itertools import chain
 import json
 import os, sys
 
+from .srbox import SRBox
 from .trials import SentenceBlock
 
 __version__ = "1.0.0"

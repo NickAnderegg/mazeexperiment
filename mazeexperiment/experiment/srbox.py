@@ -10,8 +10,11 @@ class SRBox():
         self.timeout = timeout
 
         if port is None:
+            ports = []
             for p in serial.tools.list_ports.comports():
-                dev = p.device
+                ports.append(p.device)
+
+            for dev in ports:
                 try:
                     self._box = serial.Serial(dev, baudrate=self.baudrate, timeout=self.timeout)
                     self.port = dev
@@ -32,7 +35,6 @@ class SRBox():
 
         self._reading = False
 
-        return self.port
 
     def _signal(self, byte):
         if type(byte) is int:
@@ -40,7 +42,7 @@ class SRBox():
         return self._box.write(byte)
 
     def _read(self):
-        byte == ''
+        byte = ''
         while byte == '':
             byte = self._box.read(1)
 
@@ -66,19 +68,19 @@ class SRBox():
 
     def wait_keys(self):
         if not self._reading:
-            self.start()
+            self.start_input()
 
         while True:
             keys = ord(self._read())
             if keys == 0:
                 continue
             else:
-                self.stop()
+                self.stop_input()
                 return self._keys_pressed(keys)
 
     def get_keys(self, timeout=-1):
         if not self._reading:
-            self.start()
+            self.start_input()
 
         pressed = []
 
@@ -90,14 +92,16 @@ class SRBox():
             keys = ord(self._read())
             if keys == last_keys:
                 continue
+            elif len(pressed) > 0 and current_time-pressed[-1][0] < .002:
+                continue
             else:
                 pressed.append((current_time-start_time, self._keys_pressed(keys)))
                 last_keys = keys
 
-        if abs(pressed[-1][0] - (current_time-start_time)) > 0.00125:
-            pressed.append((current_time-start_time, self.keys_pressed(last_keys)))
+        if last_keys != 0 and abs(pressed[-1][0] - (current_time-start_time)) > 0.00125:
+            pressed.append((current_time-start_time, self._keys_pressed(last_keys)))
 
-        return presseds
+        return pressed
 
     def _keys_pressed(self, keys):
         pressed = []
@@ -146,7 +150,7 @@ class SRBox():
                     self.set_light(light, set_on)
                 self.update_lights()
                 interval_start = time.time()
-                set_on = False
+                set_on = (not set_on)
 
         for light in lights:
             self.set_light(light, False)
