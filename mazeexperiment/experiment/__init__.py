@@ -16,6 +16,7 @@ import os, sys
 
 from .srbox import SRBox
 from .trials import SentenceBlock
+from .instructions import Instructions
 
 __version__ = "1.0.0"
 
@@ -42,6 +43,10 @@ class Experiment():
         self.exp_info['session_start'] = datetime.today().strftime('%H:%M:%S')
 
         self.participant_id = int(self.exp_info['participant'])
+
+        self.use_srbox = False
+        if self.use_srbox:
+            self.srbox = SRBox('COM1', 19200, 0)
 
         # data file name stem
         self.data_file_stem = u'{}{}{}{}{}_{}_{}_{}'.format(
@@ -89,6 +94,9 @@ class Experiment():
 
         self.routine_timer  = core.CountdownTimer()
 
+        # instructions = Instructions(self, self.exp_info)
+        # instructions.begin_instructions()
+        # return
         self.prepare_visuals()
         self.load_latin_square()
         self.load_trials()
@@ -152,14 +160,6 @@ class Experiment():
             font='Courier New', pos=(0, 0),         height=0.25,
             wrapWidth=None,     color=(-1,-1,-1),   colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0
-        )
-
-        self.paragraph = visual.TextStim(
-            win=self.window,    name='paragraph_text',text='',
-            font='Songti SC', pos=(0, 0),         height=0.1,
-            wrapWidth=0.8,    color=(-1,-1,-1),   colorSpace='rgb',
-            opacity=1,        depth=0.0,          ori=0,
-            alignHoriz='left'
         )
 
         # self.text_left.autoDraw  = True

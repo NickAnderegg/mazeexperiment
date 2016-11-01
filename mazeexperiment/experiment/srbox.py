@@ -1,7 +1,11 @@
+from __future__ import absolute_import, division, print_function
+from psychopy import core
+
 import serial
 import serial.tools.list_ports
 import time
 from decimal import Decimal
+from threading import Thread, Event
 
 class SRBox():
     def __init__(self, port=None, baudrate=19200, timeout=0):
@@ -35,6 +39,9 @@ class SRBox():
 
         self._reading = False
 
+        self._record_thread = None
+        self._recorded_pressed = None
+
 
     def _signal(self, byte):
         if type(byte) is int:
@@ -66,42 +73,135 @@ class SRBox():
         self._reading = False
         self._box.close()
 
-    def wait_keys(self):
+    def waitKeys(self, keyList=None, maxWait=None, timeStamped=False):
         if not self._reading:
             self.start_input()
 
-        while True:
+        if timeStamped:
+            clock = timeStamped.getTime
+            timeStamped = True
+        else:
+            clock = time.time
+
+        if maxWait is None:
+            run_infinite = True
+        else:
+            run_infinite = False
+
+        start_time = clock()
+        current_time = start_time
+        while run_infinite or (current_time - start_time < maxWait):
+            current_time = clock()
             keys = ord(self._read())
             if keys == 0:
                 continue
+            pressed = self._keys_pressed(keys)
+
+            if keyList is not None:
+                valid_keys = []
+                for key in pressed:
+                    if key in keyList:
+                        valid_keys.append(key)
             else:
+                valids_keys = pressed
+
+            if len(valid_keys) > 0:
                 self.stop_input()
-                return self._keys_pressed(keys)
+                if timeStamped:
+                    return valid_keys, current_time
+                else:
+                    return valid_keys
 
-    def get_keys(self, timeout=-1):
-        if not self._reading:
-            self.start_input()
+        return []
 
-        pressed = []
+    def recordKeys(self, keyList=None, timeStamped=False, maxWait=30):
+        if self._record_thread is not None:
+            raise RuntimeError('Cannot call recordKeys() more than once without calling getKeys()')
+        if self._reading:
+            raise RuntimeError('Cannot record keys pressed before recordKeys() is called')
 
-        start_time = time.time()
+        self._record_thread = Thread(target=self._recorder, args=(keyList, timeStamped))
+        self._record_thread.start()
+
+    def _recorder(self, keyList=None, timeStamped=False, maxWait=30):
+        self._continue_recording = True
+        if timeStamped:
+            clock = timeStamped.getTime
+            timeStamped = True
+        else:
+            clock = time.time
+
+        if maxWait is None or maxWait is False:
+            run_infinite = True
+        else:
+            run_infinite = False
+
+        self._recorded_presses = []
+
+        start_time = clock()
         current_time = start_time
-        last_keys= 0
-        while current_time - start_time < timeout:
-            current_time = time.time()
+        last_keys = 0
+        while self._continue_recording and (run_infinite or (current_time - start_time < maxWait)):
+            current_time = clock()
             keys = ord(self._read())
             if keys == last_keys:
                 continue
-            elif len(pressed) > 0 and current_time-pressed[-1][0] < .002:
-                continue
             else:
-                pressed.append((current_time-start_time, self._keys_pressed(keys)))
                 last_keys = keys
 
-        if last_keys != 0 and abs(pressed[-1][0] - (current_time-start_time)) > 0.00125:
-            pressed.append((current_time-start_time, self._keys_pressed(last_keys)))
+            keys = self._keys_pressed(keys)
 
-        return pressed
+            if keyList is not None:
+                valid_keys = []
+                for key in keys:
+                    if key in keyList:
+                        valid_keys.append(key)
+            else:
+                valids_keys = keys
+
+            if len(valid_keys) > 0:
+                if timeStamped:
+                    self._recorded_presses.append((valid_keys, current_time-start_time))
+                else:
+                    self._recorded_presses.extend(valid_keys)
+
+        if last_keys != 0 and timeStamped:
+            self._recorded_presses.append((current_time-start_time, self._keys_pressed(last_keys)))
+
+        if not timeStamped:
+            self._recorded_presses = list(set(self._recorded_presses))
+
+
+    def get_keys(self, keyList=None, timeout=-1, timeStamp=False):
+        if self._recorded_presses is None:
+            raise RuntimeError('recordKeys() method must be called before keys are available')
+
+        self._continue_recording = False
+        self.stop_input()
+        presses = self._recorded_presses
+        self._recorded_presses = None
+        return presses
+
+        # pressed = []
+        #
+        # start_time = time.time()
+        # current_time = start_time
+        # last_keys= 0
+        # while current_time - start_time < timeout:
+        #     current_time = time.time()
+        #     keys = ord(self._read())
+        #     if keys == last_keys:
+        #         continue
+        #     elif len(pressed) > 0 and current_time-pressed[-1][0] < .002:
+        #         continue
+        #     else:
+        #         pressed.append((current_time-start_time, self._keys_pressed(keys)))
+        #         last_keys = keys
+        #
+        # if last_keys != 0 and abs(pressed[-1][0] - (current_time-start_time)) > 0.00125:
+        #     pressed.append((current_time-start_time, self._keys_pressed(last_keys)))
+        #
+        # return pressed
 
     def _keys_pressed(self, keys):
         pressed = []
