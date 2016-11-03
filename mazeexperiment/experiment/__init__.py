@@ -28,11 +28,30 @@ class Experiment():
         else:
             self.pwd = pwd
         os.chdir(self.pwd)
-
         self.exp_name = u'untitled' if exp_name is None else exp_name
+
+        data_dir = u'{}{}{}{}'.format(
+            self.pwd, os.sep,
+            u'participant_data',
+            os.sep
+        )
+
+        data_file_base = u'{}_'.format(self.exp_name)
+        existing = []
+        for dirname, dirnames, filenames in os.walk(data_dir):
+            for filename in filenames:
+                if filename.startswith(data_file_base) and filename.endswith('.csv'):
+                    existing.append(int(filename[len(data_file_base):len(data_file_base)+3]))
+
+        existing = sorted([x for x in existing if x < 500])
+        if not existing:
+            participant_suggestion = 101
+        else:
+            participant_suggestion = existing[-1] + 1
+
         self.exp_info = {
             u'session': u'001',
-            u'participant': u'917',
+            u'participant': u''+str(participant_suggestion),
             u'version': u'{}'.format(__version__)
         }
 
@@ -107,7 +126,7 @@ class Experiment():
         self.pair_clock     = core.Clock()
 
         self.routine_timer  = core.CountdownTimer()
-
+        return
         # instructions = Instructions(self, self.exp_info)
         # instructions.begin_instructions()
         # return
@@ -246,7 +265,7 @@ class Experiment():
         if time is not None:
             frames = int(round(time / self.frame_dur))-1
             self.window.logOnFlip(
-                'Begin show blank screen for {:.2f} ({} frames/{} actual est.)'.format(time, frames, (frames*self.parent.frame_dur)),
+                'Begin show blank screen for {:.2f} ({} frames/{} actual est.)'.format(time, frames, (frames*self.frame_dur)),
                 logging.EXP
             )
             for i in range(frames):
