@@ -88,15 +88,23 @@ class Experiment():
         if self.use_srbox:
             self.srbox = SRBox('COM1', 19200, 0)
 
-        # data file name stem
-        self.data_file_stem = u'{}{}{}{}{}_{}_{}_{}'.format(
-            self.pwd, os.sep,
-            u'participant_data', os.sep,
+        data_file_stem = u'{}_{}_{}_{}'.format(
             self.exp_name,
             self.exp_info['participant'],
             self.exp_info['session'],
             datetime.today().strftime('%Y-%m-%d')
         )
+        # data file name stem
+        if int(self.exp_info['participant']) > 500:
+            data_file_stem = u'TESTFILE_' + data_file_stem
+
+        self.data_file_stem = u'{}{}{}{}{}'.format(
+            self.pwd, os.sep,
+            u'participant_data', os.sep,
+            data_file_stem
+        )
+        print(self.data_file_stem)
+
 
         self.experiment = data.ExperimentHandler(
             name = self.exp_name,
@@ -126,6 +134,7 @@ class Experiment():
         self.pair_clock     = core.Clock()
 
         self.routine_timer  = core.CountdownTimer()
+        logging.flush()
         return
         # instructions = Instructions(self, self.exp_info)
         # instructions.begin_instructions()
