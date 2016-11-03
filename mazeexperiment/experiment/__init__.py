@@ -60,6 +60,7 @@ class Experiment():
 
         continue_dlg = True
         dlg_title = self.exp_name
+        last_attempt = int(exp_suggestions['participant'])
         while continue_dlg:
             dlg = gui.DlgFromDict(
                 dictionary=exp_suggestions,
@@ -71,11 +72,12 @@ class Experiment():
                 core.quit()
             else:
                 part = int(exp_suggestions['participant'])
-                if part in existing:
+                if part in existing and part != last_attempt:
+                    last_attempt = part
                     while part in existing:
                         part += 1
                     exp_suggestions['participant'] = part
-                    dlg_title = u'Participant Number Already Exists! ({})'.format(self.exp_name)
+                    dlg_title = u'Participant {:0>3} Already Exists! ({})'.format(last_attempt, self.exp_name)
                 else:
                     continue_dlg = False
 
