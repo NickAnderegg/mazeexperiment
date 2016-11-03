@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import, division, print_function
-from psychopy import locale_setup, visual, core, data, event, logging#, sound, gui
+from psychopy import locale_setup, visual, core, data, event, logging, info, sound, gui
 from psychopy.constants import (NOT_STARTED, STARTED, PLAYING, PAUSED,
                                 STOPPED, FINISHED, PRESSED, RELEASED, FOREVER)
 
@@ -36,11 +36,32 @@ class Experiment():
             u'version': u'{}'.format(__version__)
         }
 
-        # self.get_session_info()
+        self.get_session_info()
+
+        self.window = visual.Window(
+            size=(1440, 900), fullscr=True, screen=0,
+            allowGUI=True, allowStencil=False,
+            monitor=u'testMonitor', color=[1,1,1], colorSpace='rgb',
+            blendMode='avg', useFBO=True)
+
+        runtime = info.RunTimeInfo(version=self.exp_info['version'], win=self.window)
 
         self.exp_info['exp_name'] = self.exp_name
         self.exp_info['date'] = datetime.today().strftime('%Y-%m-%d')
         self.exp_info['session_start'] = datetime.today().strftime('%H:%M:%S')
+
+        self.exp_info['psychopy_version'] = runtime['psychopyVersion']
+        self.exp_info['hostname'] = runtime['systemHostName']
+        self.exp_info['platform'] = runtime['systemPlatform']
+        self.exp_info['ram_total'] = runtime['systemMemTotalRAM']
+        self.exp_info['ram_free'] = runtime['systemMemFreeRAM']
+        self.exp_info['proc_count'] = runtime['systemUserProcCount']
+        self.exp_info['window_type'] = runtime['windowWinType']
+        self.exp_info['window_size'] = runtime['windowSize_pix']
+        self.exp_info['window_refresh_sd'] = runtime['windowRefreshTimeSD_ms']
+        self.exp_info['window_refresh_median'] = runtime['windowRefreshTimeMedian_ms']
+        self.exp_info['window_refresh_mean'] = runtime['windowRefreshTimeAvg_ms']
+        self.exp_info['python_version'] = runtime['pythonVersion']
 
         self.participant_id = int(self.exp_info['participant'])
 
@@ -62,28 +83,21 @@ class Experiment():
             name = self.exp_name,
             version = self.exp_info['version'],
             extraInfo = self.exp_info,
-            runtimeInfo = None,
             originPath = None,
-            savePickle = False,
+            savePickle = True,
             saveWideText = True,
             dataFileName = self.data_file_stem
         )
 
-        self.log_file = logging.LogFile('{}.log'.format(self.data_file_stem), level=logging.DEBUG)
-        logging.console.setLevel(logging.DEBUG)
+        self.log_file = logging.LogFile('{}.log'.format(self.data_file_stem), level=logging.DEBUG, encoding='utf-8')
+        logging.console.setLevel(logging.CRITICAL)
 
         self.end_exp_now = False
 
-        self.window = visual.Window(
-            size=(1440, 900), fullscr=True, screen=0,
-            allowGUI=True, allowStencil=False,
-            monitor=u'testMonitor', color=[1,1,1], colorSpace='rgb',
-            blendMode='avg', useFBO=True)
+        self.frame_rate = self.window.getActualFrameRate()
 
-        self.exp_info['frameRate'] = self.window.getActualFrameRate()
-
-        if self.exp_info['frameRate'] != None:
-            self.frame_dur = 1.0 / round(self.exp_info['frameRate'])
+        if self.frame_rate != None:
+            self.frame_dur = 1.0 / round(self.frame_rate)
         else:
             self.frame_dur = 1.0 / 60.0  # could not measure, so guess
 
@@ -102,6 +116,8 @@ class Experiment():
         self.load_trials()
 
         sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials)
+
+        logging.flush()
 
     def abort(self):
         self.experiment.saveAsWideText('{}.csv'.format(self.data_file_stem))
@@ -130,7 +146,7 @@ class Experiment():
             font='Songti SC',   pos=(-0.1, 0),      height=0.25,
             wrapWidth=None,     color=(-1, -1, -1), colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
-            alignHoriz='right'
+            alignHoriz='right', autoLog=False
         )
 
         self.text_right = visual.TextStim(
@@ -138,28 +154,31 @@ class Experiment():
             font='Songti SC',   pos=(0.1, 0),       height=0.25,
             wrapWidth=None,     color=(-1, -1, -1), colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
-            alignHoriz='left'
+            alignHoriz='left', autoLog=False
         )
 
         self.fixation = visual.TextStim(
             win=self.window,    name='fixation',    text='+',
             font='Courier New', pos=(0, 0),         height=0.25,
             wrapWidth=None,     color=(-1, -1, -1), colorSpace='rgb',
-            opacity=1,          depth=0.0,          ori=0
+            opacity=1,          depth=0.0,          ori=0,
+            autoLog=False
         )
 
         self.acc_feedback = visual.TextStim(
             win=self.window,    name='acc_feedback',text='',
             font='Courier New', pos=(0, 0),         height=0.25,
             wrapWidth=None,     color=(-1,-1,-1),   colorSpace='rgb',
-            opacity=1,          depth=0.0,          ori=0
+            opacity=1,          depth=0.0,          ori=0,
+            autoLog=False
         )
 
         self.message = visual.TextStim(
             win=self.window,    name='message',text='',
             font='Courier New', pos=(0, 0),         height=0.25,
             wrapWidth=None,     color=(-1,-1,-1),   colorSpace='rgb',
-            opacity=1,          depth=0.0,          ori=0
+            opacity=1,          depth=0.0,          ori=0,
+            autoLog=False
         )
 
         # self.text_left.autoDraw  = True
@@ -176,12 +195,17 @@ class Experiment():
 
         first_row = self.participant_id % 20
         last_row = (first_row + 5) % 20
+
+        logging.info(u'Latin square first row: {}, last row: {}'.format(first_row, last_row-1))
+
         if first_row <= 15:
             square = self.latin_square[first_row:first_row+5]
         else:
             square = self.latin_square[first_row:] + self.latin_square[:last_row]
 
         square = [int(x) for x in chain.from_iterable(square)]
+
+        logging.info(u'Participant latin square: {}'.format(square))
 
         for trial in self.trials:
             trial_num = int(trial['sentence_number']) - 1
@@ -193,6 +217,8 @@ class Experiment():
                 trial['condition'] = 3
             else:
                 trial['condition'] = 4
+
+        logging.flush()
 
     def load_latin_square(self):
         square_file = u'{}{}data{}latinsquare.txt'.format(
@@ -211,12 +237,18 @@ class Experiment():
 
     def display_message(self, message, time=None, keypress=None, color=None):
         self.message.text = message
+        logging.info(u'{}: Set message to "{}"'.format(self.message.name, message))
         self.message.color = (-1, -1, -1) if color is None else color
         self.message.draw()
+        self.window.logOnFlip(u'{}: Display message "{}"'.format(self.message.name, message), logging.EXP, self.message)
         self.window.flip()
 
         if time is not None:
             frames = int(round(time / self.frame_dur))-1
+            self.window.logOnFlip(
+                'Begin show blank screen for {:.2f} ({} frames/{} actual est.)'.format(time, frames, (frames*self.parent.frame_dur)),
+                logging.EXP
+            )
             for i in range(frames):
                 self.message.draw()
                 self.window.flip()
@@ -228,5 +260,4 @@ class Experiment():
             if keypress is not None:
                 return event.waitKeys(keyList=keypress)
 
-    def prepare_block(self):
-        pass
+        self.window.logOnFlip(u'{}: Hide message "{}"'.format(self.message.name, message), logging.EXP, self.message)

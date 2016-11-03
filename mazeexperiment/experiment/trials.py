@@ -14,10 +14,14 @@ import os, sys
 
 class SentenceBlock():
     def __init__(self, parent, experiment, exp_info, sentence_list):
+        logging.debug(u'Entered SentenceBlock()')
+
         self.exp_info = exp_info
         self.sentence_list = sentence_list
         self.experiment = experiment
         self.parent = parent
+
+        self.window = self.parent.window
 
         self.block_clock = core.Clock()
 
@@ -25,7 +29,7 @@ class SentenceBlock():
             nReps=1, method='random', extraInfo=self.exp_info,
             originPath=-1, trialList=sentence_list,
             seed=None, name='sentence_block',
-            dataTypes=['block.acc', 'block.RT']
+            dataTypes=['block.acc', 'block.RT', 'frame_rate', 'pretrial_fixation']
         )
 
         self.experiment.addLoop(self.sentences)
@@ -37,27 +41,40 @@ class SentenceBlock():
             4: 'both_dif'
         }
         self.begin_block()
+        logging.flush()
 
     def begin_block(self):
+        logging.debug(u'Entered SentenceBlock().begin_block()')
+
         self.parent.display_message('GET READY', time=3)
         for sentence in self.sentences:
             sentence = self.prepare_trial(sentence)
+            block_frame_rate = self.window.getActualFrameRate()
             sentence_trial = SentenceTrial(
                 self.parent, self.experiment, self.exp_info,
                 sentence['target_sentence'], sentence['alt_sentence']
             )
-            sentence_acc, sentence_time = sentence_trial.begin_trial()
+            sentence_acc, sentence_time, fixation_length = sentence_trial.begin_trial()
+            logging.flush()
 
+            self.sentences.addData('frame_rate', block_frame_rate)
             self.sentences.addData('block.acc', sentence_acc)
-            self.sentences.addData('block.RT', '{:.1f}'.format(sentence_time * 1000))
+            self.sentences.addData('block.RT', '{:.2f}'.format(sentence_time * 1000))
+            self.sentences.addData('pretrial_fixation', '{:.2f}'.format(fixation_length * 1000))
             self.parent.experiment.nextEntry()
 
         self.experiment.loopEnded(self.sentences)
 
 
     def prepare_trial(self, trial):
+        logging.debug(u'Preparing trial for sentence {}, critical target {}'.format(
+            trial['sentence_number'], trial['critical_target']
+        ))
+
         trial['critical_distractor'] = trial['distractors'][self.conditions[trial['condition']]]
-        trial['target_sentence'], trial['alt_sentence'] = self.process_sentence(trial['sentence'], trial['critical_distractor'])
+
+        logging.exp(u'Set critical distractor to: {}'.format(trial['critical_distractor']))
+        trial['target_sentence'], trial['alt_sentence'], trial['critical_index'] = self.process_sentence(trial['sentence'], trial['critical_distractor'])
 
         del trial['sentence']
         del trial['distractors']
@@ -67,10 +84,13 @@ class SentenceBlock():
     def process_sentence(self, sentence_pairs, distractor):
         target = []
         alternative = []
+        critical_index = 0
+        count = 0
         for pair in sentence_pairs:
             if pair[1] == u'＃':
                 target.append(pair[0])
                 alternative.append(distractor)
+                critical_index = count
             elif pair[1] == u'*':
                     target[-1] = u'{}{}'.format(target[-1], pair[0])
                     alternative[-1] = u'{}{}'.format(alternative[-1], pair[0])
@@ -78,7 +98,9 @@ class SentenceBlock():
                 target.append(pair[0])
                 alternative.append(pair[1])
 
-        return u' | '.join(target), u' | '.join(alternative)
+            count += 1
+
+        return u' | '.join(target), u' | '.join(alternative), critical_index
 
 class SentenceTrial():
     def __init__(self, parent, experiment, exp_info, target_sentence, alternative_sentence):
@@ -94,6 +116,11 @@ class SentenceTrial():
         self.experiment = experiment
         self.parent = parent
 
+        self.window = self.parent.window
+        self.text_left = self.parent.text_left
+        self.text_right = self.parent.text_right
+        self.acc_feedback = self.parent.acc_feedback
+
         self.trial_clock = core.Clock()
         self.pair_clock = core.Clock()
 
@@ -101,7 +128,10 @@ class SentenceTrial():
             nReps=1, method='sequential', extraInfo=self.exp_info,
             trialList=self.sentence, name='sentence_trial',
             dataTypes=[
-                'pair_correct', 'pair_distractor', 'resp', 'resp.acc', 'resp.RT'
+                'pair_correct', 'pair_distractor',
+                'target_pos', 'target_pos.verbose',
+                'resp', 'resp.acc', 'resp.RT', 'resp.verbose',
+                'prev_pos', 'prev_resp'
             ]
         )
 
@@ -110,8 +140,13 @@ class SentenceTrial():
         # self.begin_trial()
 
     def begin_trial(self):
-        self.parent.text_left.text = ''
-        self.parent.text_right.text = ''
+        logging.debug(u'Entered SentenceTrial().begin_trial()')
+
+        self.text_left.text = ''
+        self.text_right.text = ''
+
+        logging.info(u'{}: Reset text'.format(self.text_left.name))
+        logging.info(u'{}: Reset text'.format(self.text_right.name))
 
         self.show_blank(.5)
         fixation_length = 2 + 3*random()
@@ -119,22 +154,46 @@ class SentenceTrial():
 
         sentence_correct = True
 
+        prev_pos = ''
+        prev_resp = ''
+        logging.exp(u'trial_clock: Reset time')
         self.trial_clock.reset()
         for pair in self.trial:
             self.show_fixation(0.2)
 
             target_pos = self.show_pair(pair)
+
+            logging.exp(u'pair_clock: Reset time')
             self.pair_clock.reset()
 
             acc, response_time, response = self.get_response(target_pos)
             self.clear_pair()
 
+            self.trial.addData('target_pos', target_pos)
+            if target_pos == 0:
+                self.trial.addData('target_pos.verbose', 'L')
+            else:
+                self.trial.addData('target_pos.verbose', 'R')
+
             self.trial.addData('resp', response)
-            self.trial.addData('resp.RT', '{:.1f}'.format(response_time * 1000))
+            if response == 0:
+                self.trial.addData('resp.verbose', 'L')
+            else:
+                self.trial.addData('resp.verbose', 'R')
+
+            self.trial.addData('resp.RT', '{:.2f}'.format(response_time * 1000))
             self.trial.addData('resp.acc', acc)
+
+            self.trial.addData('prev.pos', prev_pos)
+            self.trial.addData('prev.resp', prev_resp)
+
+            prev_pos = target_pos
+            prev_resp = response
+
             self.parent.experiment.nextEntry()
 
             if acc == 0:
+                logging.exp(u'Incorrect sentence path chosen')
                 sentence_correct = False
                 break
         block_time = self.trial_clock.getTime()
@@ -143,54 +202,80 @@ class SentenceTrial():
         self.experiment.loopEnded(self.trial)
 
         if sentence_correct:
-            return 1, block_time
+            logging.info(u'Sentence completed accurately.')
+            logging.data(u'Block completion time: {}'.format(block_time))
+            logging.data(u'Block accuracy: {}'.format(1))
+            return 1, block_time, fixation_length
         else:
-            return 0, block_time
+            logging.info(u'Sentence was not completed accurately.')
+            logging.data(u'Block completion time: {}'.format(block_time))
+            logging.data(u'Block accuracy: {}'.format(0))
+            return 0, block_time, fixation_length
 
     def show_pair(self, pair):
         target_pos = randint(0,2)
+        logging.exp(u'Pair target position: {}'.format(target_pos))
         if target_pos == 0:
-            self.parent.text_left.text = pair['pair_correct']
-            self.parent.text_left.color = (-1, -0.50, -1)
-            self.parent.text_right.text = pair['pair_distractor']
-            self.parent.text_right.color = (-1, -1, -1)
+            self.text_left.text = u'' + pair['pair_correct']
+            self.text_left.color = (-1, -0.50, -1)
+            self.text_right.text = u'' + pair['pair_distractor']
+            self.text_right.color = (-1, -1, -1)
         else:
-            self.parent.text_left.text = pair['pair_distractor']
-            self.parent.text_left.color = (-1, -1, -1)
-            self.parent.text_right.text = pair['pair_correct']
-            self.parent.text_right.color = (-1, -0.50, -1)
+            self.text_left.text = u'' + pair['pair_distractor']
+            self.text_left.color = (-1, -1, -1)
+            self.text_right.text = u'' + pair['pair_correct']
+            self.text_right.color = (-1, -0.50, -1)
 
-        self.parent.text_left.draw()
-        self.parent.text_right.draw()
+        logging.info(u'{}: Set text to "{}"'.format(self.text_left.name, self.text_left.text))
+        logging.info(u'{}: Set text to "{}"'.format(self.text_right.name, self.text_right.text))
+
+        self.text_left.draw()
+        self.text_right.draw()
+
+        self.window.logOnFlip(u'{}: Display text "{}"'.format(self.text_left.name, self.text_left.text), logging.EXP)
+        self.window.logOnFlip(u'{}: Display text "{}"'.format(self.text_right.name, self.text_right.text), logging.EXP)
         self.flip()
 
         return target_pos
 
     def show_feedback(self, accuracy):
         if not accuracy:
-            self.parent.acc_feedback.text = 'INCORRECT'
-            self.parent.acc_feedback.color = (-0.25, -0.25, -0.25)
+            self.acc_feedback.text = 'INCORRECT'
+            self.acc_feedback.color = (-0.25, -0.25, -0.25)
         else:
-            self.parent.acc_feedback.text = 'CORRECT'
-            self.parent.acc_feedback.color = (-1, 1, -1)
+            self.acc_feedback.text = 'CORRECT'
+            self.acc_feedback.color = (-1, 1, -1)
+
+        logging.info(u'{}: Set feedback to "{}"'.format(self.acc_feedback.name, self.acc_feedback.text))
+        self.window.logOnFlip(u'{}: Display feedback "{}"'.format(self.acc_feedback.name, self.acc_feedback.text), logging.EXP)
 
         for i in range(160):
-            self.parent.acc_feedback.draw()
+            self.acc_feedback.draw()
             self.flip()
 
+        self.window.logOnFlip(u'{}: Hide feedback "{}"'.format(self.acc_feedback.name, self.acc_feedback.text), logging.EXP)
+
     def clear_pair(self):
-        self.parent.text_left.text = ''
-        self.parent.text_right.text = ''
+        self.text_left.text = ''
+        self.text_right.text = ''
 
-        self.parent.text_left.color = (-1, -1, -1)
-        self.parent.text_right.color = (-1, -1, -1)
+        logging.info(u'{}: Reset text'.format(self.text_left.name))
+        logging.info(u'{}: Reset text'.format(self.text_right.name))
 
-        self.parent.text_left.draw()
-        self.parent.text_right.draw()
+        self.text_left.color = (-1, -1, -1)
+        self.text_right.color = (-1, -1, -1)
+
+        self.text_left.draw()
+        self.text_right.draw()
+
+        self.window.logOnFlip(u'{}: Display text "{}"'.format(self.text_left.name, self.text_left.text), logging.EXP)
+        self.window.logOnFlip(u'{}: Display text "{}"'.format(self.text_right.name, self.text_right.text), logging.EXP)
         self.flip()
 
     def get_response(self, target_pos):
+        logging.exp(u'Waiting for response...')
         response, response_time = event.waitKeys(keyList=['c', 'm'], timeStamped=self.pair_clock)[0]
+        logging.exp(u'Key presses received')
         # response_time = self.pair_clock.getTime()
 
         if response == 'c':
@@ -198,21 +283,43 @@ class SentenceTrial():
         elif response == 'm':
             response = 1
 
+        logging.exp(u'Kepress position: {}'.format(response))
+
         if response == target_pos:
+            logging.info(u'Kepress does match target position.')
+            logging.data(u'Response: {}'.format(response))
+            logging.data(u'Acc: {}'.format(1))
+            logging.data(u'Response time: {}'.format(response_time))
             return 1, response_time, response
         else:
+            logging.info(u'Kepress does match target position.')
+            logging.data(u'Response: {}'.format(response))
+            logging.data(u'Acc: {}'.format(0))
+            logging.data(u'Response time: {}'.format(response_time))
             return 0, response_time, response
 
     def show_fixation(self, time):
         frames = int(round(time / self.parent.frame_dur))
+        self.window.logOnFlip(
+            'Begin show fixation for {:.2f} ({} frames/{} actual est.)'.format(time, frames, (frames*self.parent.frame_dur)),
+            logging.EXP
+        )
         for i in range(frames):
             self.parent.fixation.draw()
             self.flip()
 
+        self.window.logOnFlip(u'End show fixation', logging.EXP)
+
     def show_blank(self, time):
         frames = int(round(time / self.parent.frame_dur))
+        self.window.logOnFlip(
+            'Begin show blank screen for {:.2f} ({} frames/{} actual est.)'.format(time, frames, (frames*self.parent.frame_dur)),
+            logging.EXP
+        )
         for i in range(frames):
             self.flip()
 
+        self.window.logOnFlip(u'End show blank screen', logging.EXP)
+
     def flip(self):
-        self.parent.window.flip()
+        self.window.flip()

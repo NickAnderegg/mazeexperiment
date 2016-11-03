@@ -26,6 +26,7 @@
 
 #add correct version number here
 __version__ = "1.0.0"
+__author__ = "Nick Anderegg"
 
 
 #PROGRAMNAME="mazeexperiment"
