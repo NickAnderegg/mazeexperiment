@@ -40,22 +40,49 @@ class Experiment():
         existing = []
         for dirname, dirnames, filenames in os.walk(data_dir):
             for filename in filenames:
-                if filename.startswith(data_file_base) and filename.endswith('.csv'):
-                    existing.append(int(filename[len(data_file_base):len(data_file_base)+3]))
+                if data_file_base in filename and filename.endswith('.csv'):
+                    filename = filename.split('_')
+                    participant = int(filename[1])
 
-        existing = sorted([x for x in existing if x < 500])
+                    existing.append(participant)
+
+        existing_low = sorted([x for x in existing if x < 500])
         if not existing:
             participant_suggestion = 101
         else:
-            participant_suggestion = existing[-1] + 1
+            participant_suggestion = existing_low[-1] + 1
 
-        self.exp_info = {
-            u'session': u'001',
+
+        exp_suggestions = {
             u'participant': u''+str(participant_suggestion),
             u'version': u'{}'.format(__version__)
         }
 
-        self.get_session_info()
+        continue_dlg = True
+        dlg_title = self.exp_name
+        while continue_dlg:
+            dlg = gui.DlgFromDict(
+                dictionary=exp_suggestions,
+                title=dlg_title,
+                fixed=[u'version']
+            )
+
+            if dlg.OK == False:
+                core.quit()
+            else:
+                part = int(exp_suggestions['participant'])
+                if part in existing:
+                    while part in existing:
+                        part += 1
+                    exp_suggestions['participant'] = part
+                    dlg_title = u'Participant Number Already Exists! ({})'.format(self.exp_name)
+                else:
+                    continue_dlg = False
+
+        self.exp_info = exp_suggestions
+
+
+        # self.get_session_info()
 
         self.window = visual.Window(
             size=(1440, 900), fullscr=True, screen=0,
@@ -72,15 +99,11 @@ class Experiment():
         self.exp_info['psychopy_version'] = runtime['psychopyVersion']
         self.exp_info['hostname'] = runtime['systemHostName']
         self.exp_info['platform'] = runtime['systemPlatform']
-        self.exp_info['ram_total'] = runtime['systemMemTotalRAM']
-        self.exp_info['ram_free'] = runtime['systemMemFreeRAM']
         self.exp_info['proc_count'] = runtime['systemUserProcCount']
         self.exp_info['window_type'] = runtime['windowWinType']
         self.exp_info['window_size'] = runtime['windowSize_pix']
-        self.exp_info['window_refresh_sd'] = runtime['windowRefreshTimeSD_ms']
-        self.exp_info['window_refresh_median'] = runtime['windowRefreshTimeMedian_ms']
-        self.exp_info['window_refresh_mean'] = runtime['windowRefreshTimeAvg_ms']
-        self.exp_info['python_version'] = runtime['pythonVersion']
+
+        self.exp_info['all_runtime'] = dict(runtime)
 
         self.participant_id = int(self.exp_info['participant'])
 
@@ -88,22 +111,21 @@ class Experiment():
         if self.use_srbox:
             self.srbox = SRBox('COM1', 19200, 0)
 
-        data_file_stem = u'{}_{}_{}_{}'.format(
+        data_file_stem = u'{}_{}_{}'.format(
             self.exp_name,
             self.exp_info['participant'],
-            self.exp_info['session'],
             datetime.today().strftime('%Y-%m-%d')
         )
         # data file name stem
         if int(self.exp_info['participant']) > 500:
-            data_file_stem = u'TESTFILE_' + data_file_stem
+            data_file_stem = u'TESTFILE' + data_file_stem
 
         self.data_file_stem = u'{}{}{}{}{}'.format(
             self.pwd, os.sep,
             u'participant_data', os.sep,
             data_file_stem
         )
-        print(self.data_file_stem)
+        # print(self.data_file_stem)
 
 
         self.experiment = data.ExperimentHandler(
@@ -135,7 +157,7 @@ class Experiment():
 
         self.routine_timer  = core.CountdownTimer()
         logging.flush()
-        return
+
         # instructions = Instructions(self, self.exp_info)
         # instructions.begin_instructions()
         # return
