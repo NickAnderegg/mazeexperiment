@@ -1,0 +1,57 @@
+In this experiment, you will be asked to read sentences in Mandarin.
+
+The words in each sentence will be presented one at a time. Each word in a sentence will appear beside an unrelated word that does that does not fit into the sentence.
+
+Your task is to choose which word fits best into the sentence. You will do this by pressing the button which corresponds to the side that the correct word is on.
+
+To choose the word that is on the left side of the screen, press the button that is on the left side of the response box.
+
+[DEMONSTRATION]
+
+To choose the word that is on the right side of the screen, press the button that is on the right side of the response box.
+
+[DEMONSTRATION]
+
+Before each block of sentences begins, a message will appear on screen which states "GET READY"
+
+GET READY
+
+This will be followed briefly by a blank screen. When a fixation cross (+) appears on screen, the first sentence is about to begin. Here's an example:
+
+[DEMONSTRATION]
+
+The first word in each sentence will be presented beside a series of X symbols.
+
+ON SCREEN: The | XXX
+
+You have to press the response button which corresponds to the correct word.
+
+Press the button on the right to choose that word.
+
+After you choose a word, both words will be replaced by a fixation cross. Then, you will see two new words. Only one of these words can come after the previous word that you chose. Here's an example:
+
+ON SCREEN: boy | jumped
+
+Now you should choose the word that is on the left side by pressing the button on the left. You would choose this because "The boy..." is correct grammar, while "The jumped..." is not a legal sentence.
+
+Press the button on the left to choose that word.
+
+Good! Now you will see an example of responses to an entire sentence. Please watch the screen carefully, but do not make any responses.
+
+[DEMONSTRATION]
+
+After you reach the end of the sentence, a feedback message will be displayed.
+
+CORRECT!
+
+If you choose the wrong word in the middle of a sentence, the trial will end:
+
+[DEMONSTRATION]
+
+INCORRECT!
+
+If you have any questions about this experiment, please ask the experimenter now.
+
+If you would like to see these instructions again, press the button on the left. If you are ready to try a few practice trials, press the button on the right.
+
+REPLAY or CONTINUE

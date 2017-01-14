@@ -160,9 +160,9 @@ class Experiment():
         self.routine_timer  = core.CountdownTimer()
         logging.flush()
 
-        # instructions = Instructions(self, self.exp_info)
-        # instructions.begin_instructions()
-        # return
+        instructions = Instructions(self, self.exp_info)
+        instructions.begin_instructions()
+        return
         self.prepare_visuals()
         self.load_latin_square()
         self.load_trials()

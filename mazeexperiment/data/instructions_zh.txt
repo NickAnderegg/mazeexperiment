@@ -1,0 +1,77 @@
+In this experiment, you will be asked to read sentences in Mandarin.
+在这个实验中，你将阅读一些中文句子。
+
+The words in each sentence will be presented one at a time. Each word in a sentence will appear beside an unrelated word that does that does not fit into the sentence.
+句子中的词将会一个一个呈现。每一个适合语境的词将会和一个不适合语境的词同时出现。
+
+Your task is to choose which word fits best into the sentence. You will do this by pressing the button which corresponds to the side that the correct word is on.
+你需要做的就是选出适合语境那个词。你将按相应的键来选择正确的词。
+
+To choose the word that is on the left side of the screen, press the button that is on the left side of the response box.
+如果要选择左边的词，按左键。
+
+[DEMONSTRATION]
+
+To choose the word that is on the right side of the screen, press the button that is on the right side of the response box.
+如果要选择右边的词，按右键。
+
+[DEMONSTRATION]
+
+Before each block of sentences begins, a message will appear on screen which states "GET READY"
+每个句子开始之前，你会看到“请准备”的提示。
+
+GET READY
+
+This will be followed briefly by a blank screen. When a fixation cross (+) appears on screen, the first sentence is about to begin. Here's an example:
+紧跟着你会看到空白屏幕。然后“+” 会出现在屏幕上， 第一个句子即将开始。我们来看一个例子：
+
+[DEMONSTRATION]
+
+The first word in each sentence will be presented beside a series of X symbols.
+
+
+ON SCREEN: The | XXX
+
+You have to press the response button which corresponds to the correct word.
+你需要按相应的键选择正确的词。每个句子的第一个词的选项里只有一是词，你只需要选择这个词。
+
+Press the button on the left to choose that word.
+按左键选择左边的词。
+
+After you choose a word, both words will be replaced by a fixation cross. Then, you will see two new words. Only one of these words can come after the previous word that you chose. Here's an example:
+你做好选择之后，两个词会消失，“+”会出现。 然后你会看到两个新词，其中一个更接应前一个被选择的词的语境。我们来看一个例子：
+
+ON SCREEN: boy | jumped
+
+Now you should choose the word that is on the left side by pressing the button on the left. You would choose this because "The boy..." is correct grammar, while "The jumped..." is not a legal sentence.
+按左键选择左边的词。因为“一个男孩” 是正确语法而”一个跳”不是。
+
+Press the button on the left to choose that word.
+按左键选择左边的词。
+
+Good! Now you will see an example of responses to an entire sentence. Please watch the screen carefully, but do not make any responses.
+很好！现在我们来看一个完整句子词汇选择的例子。请认真观看，不需要做任何选择。
+
+[DEMONSTRATION]
+
+After you reach the end of the sentence, a feedback message will be displayed.
+当你选好每个句子的最后一个词，你会看到一个反馈消息。
+
+CORRECT!
+正确！
+
+If you choose the wrong word in the middle of a sentence, the trial will end:
+如果你在句中选择了错误的词，这个句子会半途而废：然后你会看到 “错误！” 的提示。
+
+[DEMONSTRATION]
+
+INCORRECT!
+
+If you have any questions about this experiment, please ask the experimenter now.
+如果你有任何问题，请现在提问。
+
+If you would like to see these instructions again, press the button on the left. If you are ready to try a few practice trials, press the button on the right.
+如果你还需要看一遍实验介绍，按左键。如果你没有问题已经准备好，按右键。
+
+REPLAY or CONTINUE
+重放实验介绍 or 继续到实验
