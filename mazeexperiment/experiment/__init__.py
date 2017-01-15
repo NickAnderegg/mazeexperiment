@@ -17,6 +17,7 @@ import os, sys
 from .srbox import SRBox
 from .trials import SentenceBlock
 from .instructions import Instructions
+from .practicetrials import PracticeBlock
 
 __version__ = "1.0.0"
 
@@ -160,14 +161,17 @@ class Experiment():
         self.routine_timer  = core.CountdownTimer()
         logging.flush()
 
-        instructions = Instructions(self, self.exp_info)
-        instructions.begin_instructions()
-        return
+        # instructions = Instructions(self, self.exp_info)
+        # instructions.begin_instructions()
+
         self.prepare_visuals()
         self.load_latin_square()
         self.load_trials()
+        self.load_practice_trials()
 
-        sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials)
+        practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
+
+        # sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials)
 
         logging.flush()
 
@@ -235,6 +239,18 @@ class Experiment():
 
         # self.text_left.autoDraw  = True
         # self.text_right.autoDraw = True
+
+    def load_practice_trials(self):
+        practice_file = u'{}{}data{}practice_trials.json'.format(
+            self.pwd, os.sep, os.sep
+        )
+
+        practice_file = open(practice_file, 'r')
+        self.practice_trials = json.load(practice_file, encoding='utf-8')['sentences']
+        practice_file.close()
+
+        logging.info(u'Practice trials loaded')
+        logging.flush()
 
     def load_trials(self):
         trials_file = u'{}{}data{}trials.json'.format(
