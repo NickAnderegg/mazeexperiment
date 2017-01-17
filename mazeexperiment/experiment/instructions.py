@@ -19,6 +19,9 @@ TEXT_GET_READY = u'请准备'
 TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
+# Speed constants
+SPEED_MULTIPLIER = 0.1
+
 class Instructions():
     def __init__(self, parent, exp_info):
         self.exp_info = exp_info
@@ -30,33 +33,41 @@ class Instructions():
 
     def begin_instructions(self):
         # self.paragraph.text = u'In this experiment, you will be asked to read sentences in Mandarin. '
-        self.paragraph.text = u'在这个实验中，\u200B你将阅读一些中文句子。'
+        self.paragraph.text = (
+            u'在这个实验中，你将阅读一些中文句子。'
+        )
         self.paragraph.autoDraw = True
         self.paragraph.alignVert = 'center'
-        self.flipper(5)
+        self.flipper(5 * SPEED_MULTIPLIER)
 
         # self.paragraph.text = (
         #     u'The words in each sentence will be presented one at a time. Each word ' +
         #     u'in a sentence will appear beside an unrelated word that does ' +
         #     u'that does not fit into the sentence.'
         # )
-        self.paragraph.text = u'句子中的词将会一个一个呈现。\u200B每一个适合语境的词将会和\u200B一个不适合语境的词同时出现。'
-        self.flipper(10)
+        self.paragraph.text = (
+            u'句子中的词将会一个一个呈现。每一个适合语\u2028' +
+            u'境的词将会和一个不适合语境的词同时出现。'
+        )
+        self.flipper(10 * SPEED_MULTIPLIER)
 
         # self.paragraph.text = (
         #     u'Your task is to choose which word fits best into the sentence. '+
         #     u'You will do this by pressing the button which corresponds to the side ' +
         #     u'that the correct word is on.'
         # )
-        self.paragraph.text = u'你需要做的就是选出适合语境那个词。\u200B你将按相应的键来选择正确的词。'
-        self.flipper(15)
+        self.paragraph.text = (
+            u'你需要做的就是选出适合语境那个词。你将按相应的键\u2028' +
+            u'来选择正确的词。'
+        )
+        self.flipper(15 * SPEED_MULTIPLIER)
 
         # self.paragraph.text = (
         #     u'To choose the word that is on the left side of the screen, ' +
         #     u'press the button that is on the left side of the response box.'
         # )
         self.paragraph.text = u'如果要选择左边的词，按左键。'
-        self.flipper(3)
+        self.flipper(3 * SPEED_MULTIPLIER)
         draw = True
         for i in range(20):
             self.draw_left_arrow(draw)
@@ -73,7 +84,7 @@ class Instructions():
         #     u'press the button that is on the right side of the response box.'
         # )
         self.paragraph.text = u'如果要选择右边的词，按右键。'
-        self.flipper(3)
+        self.flipper(3 * SPEED_MULTIPLIER)
         draw = True
         for i in range(20):
             self.draw_right_arrow(draw)
@@ -95,15 +106,15 @@ class Instructions():
         #     u'Before each block of sentences begins, ' +
         #     u'a message will appear on screen which states "GET READY"'
         # )
-        self.paragraph.text = u'每个句子开始之前，\u200B你会看到\u200B“请准备”\u200B的提示。'
+        self.paragraph.text = u'每个句子开始之前，你会看到“请准备”的提示。'
         self.paragraph.pos= (-0.8, 0.9)
         self.paragraph.autoDraw = True
-        self.flipper(3)
+        self.flipper(3 * SPEED_MULTIPLIER)
 
         # self.message.text = u'GET READY'
         self.message.text = TEXT_GET_READY
         self.message.autoDraw = True
-        self.flipper(7.5)
+        self.flipper(7.5 * SPEED_MULTIPLIER)
 
         self.paragraph.autoDraw = False
         self.flipper(0.25)
@@ -113,29 +124,28 @@ class Instructions():
         #     u'to begin. Here\'s an example:'
         # )
         self.paragraph.text = (
-            u'紧跟着你会看到空白屏幕。\u200B' +
-            u'然后“+” 会出现在屏幕上，\u200B第一个句子即将开始。\u200B' +
-            u'我们来看一个例子：'
+            u'紧跟着你会看到空白屏幕。然后“+” 会出现在屏幕上，\u2028' +
+            u'第一个句子即将开始。我们来看一个例子：'
         )
         self.paragraph.autoDraw = True
-        self.flipper(10)
+        self.flipper(10 * SPEED_MULTIPLIER)
         self.paragraph.autoDraw = False
-        self.flipper(2)
+        self.flipper(2 * SPEED_MULTIPLIER)
         self.message.autoDraw = False
         self.flipper(1)
         self.fixation.autoDraw = True
-        self.flipper(5)
+        self.flipper(5 * SPEED_MULTIPLIER)
 
         # self.paragraph.text = (
         #     u'The first word in each sentence will be presented beside a series of X symbols.'
         # )
         self.paragraph.text = (
-            u'你需要按相应的键选择正确的词。\u200B' +
-            u'每个句子的第一个词的选项里只有一是词，\u200B' +
-            u'你只需要选择这个词。'
+            u'你需要按相应的键选择正确的词。\u2028' +
+            u'每个句子的第一个词的选项里\u2028' +
+            u'只有一是词，你只需要选择这个词。'
         )
         self.paragraph.autoDraw = True
-        self.flipper(5)
+        self.flipper(5 * SPEED_MULTIPLIER)
 
         self.text_left.text = 'XXX'
         # self.text_right.text = 'The'
@@ -145,7 +155,7 @@ class Instructions():
         self.flipper(0.5)
 
         self.fixation.autoDraw = False
-        self.flipper(3)
+        self.flipper(3 * SPEED_MULTIPLIER)
 
         # self.paragraph.text = (
         #     u'You have to press the response button which corresponds to the correct word.'
@@ -153,7 +163,7 @@ class Instructions():
         # This sentence has been combined with the above translation
 
         self.paragraph.autoDraw = True
-        self.flipper(3)
+        self.flipper(3 * SPEED_MULTIPLIER)
 
         # self.paragraph.text = (
         #     u'Press the button on the right to choose that word.'
@@ -178,11 +188,12 @@ class Instructions():
         #     u'previous word that you chose. Here\'s an example:'
         # )
         self.paragraph.text = (
-            u'你做好选择之后，\u200B两个词会消失，“+”会出现。\u200B' +
-            u'然后你会看到两个新词，\u200B其中一个更接应前一个被选择的词的语境。\u200B' +
+            u'你做好选择之后，两个词会消失，“+”会出现。\u2028' +
+            u'然后你会看到两个新词，其中一个更接应\u2028' +
+            u'前一个被选择的词的语境。\u2028' +
             u'我们来看一个例子：'
         )
-        self.flipper(15)
+        self.flipper(15 * SPEED_MULTIPLIER)
         self.text_left.autoDraw = False
         self.text_right.autoDraw = False
         self.fixation.autoDraw = True
@@ -197,7 +208,7 @@ class Instructions():
         self.text_left.autoDraw = True
         self.text_right.autoDraw = True
 
-        self.flipper(3)
+        self.flipper(3 * SPEED_MULTIPLIER)
 
         self.paragraph.autoDraw = True
         # self.paragraph.text = (
@@ -205,8 +216,8 @@ class Instructions():
         #     u'the button on the left. You would choose this because "The boy..." is ' +
         #     u'correct grammar, while "The jumped..." is not a legal sentence.'
         # )
-        self.paragraph.text = u'按左键选择左边的词。\u200B因为“一个男孩” \u200B是正确语法而\u200B“一个跳”不是。'
-        self.flipper(15)
+        self.paragraph.text = u'按左键选择左边的词。\u2028因为“一个男孩” 是正确语法而“一个跳”不是。'
+        self.flipper(15 * SPEED_MULTIPLIER)
 
         self.paragraph.pos = (-0.5, -0.6)
         # self.paragraph.text = (
@@ -230,11 +241,15 @@ class Instructions():
         #     u'Good! Now you will see an example of responses to an entire sentence. ' +
         #     u'Please watch the screen carefully, but do not make any responses.'
         # )
-        self.paragraph.text = u'很好！现在我们来看\u200B一个完整句子词汇选择的例子。\u200B请认真观看，不需要做任何选择。'
+        self.paragraph.text = (
+            u'很好！\u2028现在我们来看一个完整' +
+            u'句子词汇选择的例子。\u2028' +
+            u'请认真观看，不需要做任何选择。'
+        )
 
         self.paragraph.autoDraw = True
         self.paragraph.pos = (-0.8, 0)
-        self.flipper(10)
+        self.flipper(10 * SPEED_MULTIPLIER)
 
         example_sentence = [
             [u"这种", u"ＸＸ"],
@@ -250,16 +265,16 @@ class Instructions():
             [u".", u"*"]
         ]
         self.paragraph.autoDraw = False
-        self.flipper(2)
+        self.flipper(2 * SPEED_MULTIPLIER)
 
         # self.message.text = u'GET READY'
         self.message.text = TEXT_GET_READY
         self.message.autoDraw = True
-        self.flipper(5)
+        self.flipper(5 * SPEED_MULTIPLIER)
         self.message.autoDraw = False
         self.flipper(1)
         self.fixation.autoDraw = True
-        self.flipper(3)
+        self.flipper(3 * SPEED_MULTIPLIER)
 
         for pair in example_sentence:
             target_pos = randint(0,2)
@@ -296,25 +311,25 @@ class Instructions():
         # self.paragraph.text = (
         #     u'After you reach the end of the sentence, a feedback message will be displayed.'
         # )
-        self.paragraph.text = u'当你选好每个句子的最后一个词，\u200B你会看到一个反馈消息。'
+        self.paragraph.text = u'当你选好每个句子的最后一个词，\u2028你会看到一个反馈消息。'
 
         # self.message.text = u'Correct!'
-        self.messages.text = TEXT_FEEDBACK_CORRECT
+        self.message.text = TEXT_FEEDBACK_CORRECT
         self.message.color = (-1, 1, -1)
         self.message.autoDraw = True
 
-        self.flipper(5)
+        self.flipper(5 * SPEED_MULTIPLIER)
         self.message.autoDraw = False
 
         # self.paragraph.text = (
         #     u'If you choose the wrong word in the middle of a sentence, the trial will end:'
         # )
         self.paragraph.text = (
-            u'如果你在句中选择了错误的词，\u200B' +
-            u'这个句子会半途而废：\u200B' +
+            u'如果你在句中选择了错误的词，\u2028' +
+            u'这个句子会半途而废：\u2028' +
             u'然后你会看到 “错误！” 的提示。'
         )
-        self.flipper(5)
+        self.flipper(5 * SPEED_MULTIPLIER)
 
         self.fixation.autoDraw = True
         self.flipper(0.5)
@@ -345,7 +360,7 @@ class Instructions():
         self.message.color = (1, -1, -1)
         self.message.autoDraw = True
 
-        self.flipper(5)
+        self.flipper(5 * SPEED_MULTIPLIER)
 
         self.message.autoDraw = False
 
@@ -356,7 +371,7 @@ class Instructions():
         #     u'If you have any questions about this experiment, please ask the experimenter now. '
         # )
         self.paragraph.text = u'如果你有任何问题，请现在提问。'
-        self.flipper(5)
+        self.flipper(5 * SPEED_MULTIPLIER)
 
         move, frames = self.animated_move([-0.8, 0.0], [-0.8, 0.75], 5)
         for i in range(frames):
@@ -367,7 +382,14 @@ class Instructions():
         #     u'If you would like to see these instructions again, press the button on the left. ' +
         #     u'If you are ready to try a few practice trials, press the button on the right.'
         # )
-        self.paragraph.text = u'如果你还需要看一遍实验介绍，按左键。\u200B如果你没有问题已经准备好，按右键。'
+        self.paragraph.text = (
+            u'如果你还需要看一遍实验介绍，按左键。\u2028' +
+            u'如果你没有问题已经准备好，按右键。'
+        )
+
+
+        self.text_left.height = 0.12
+        self.text_right.height = 0.12
 
         # self.text_left.text = u'↺ Replay'
         self.text_left.text = u'↺ 重放实验介绍'
@@ -378,7 +400,7 @@ class Instructions():
         self.text_right.autoDraw = True
         self.fixation.autoDraw = True
 
-        self.flipper(10)
+        self.flipper(10 * SPEED_MULTIPLIER)
 
     def prepare_visuals(self):
         self.paragraph = visual.TextStim(
@@ -425,7 +447,7 @@ class Instructions():
 
         self.message = visual.TextStim(
             win=self.window,    name='message', text='',
-            font='Courier New', pos=(0, 0),         height=0.25,
+            font='Songti SC', pos=(0, 0),         height=0.25,
             wrapWidth=None,     color=(-1,-1,-1),   colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0
         )

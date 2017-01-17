@@ -27,8 +27,7 @@ class PracticeBlock():
 
         self.trials = data.TrialHandler(
             nReps=1, method='sequential', extraInfo=self.exp_info,
-            originPath=-1, trialList=self.practice_list, name='practice_block',
-            dataTypes=['block.acc', 'block.RT', 'frame_rate', 'pretrial_fixation']
+            originPath=-1, trialList=self.practice_list, name='practice_block'
         )
 
         self.experiment.addLoop(self.trials)
@@ -98,8 +97,11 @@ class PracticeTrial():
     def begin_trial(self):
         logging.debug(u'Entered PracticeTrial().begin_trial()')
 
-        self.text_left.text = ''
-        self.text_right.text = ''
+        # self.text_left.text = ''
+        # self.text_right.text = ''
+
+        self.clear_pair()
+        self.reset_displays()
 
         # self.show_blank(.5)
         fixation_length = 2 + 3*random()
