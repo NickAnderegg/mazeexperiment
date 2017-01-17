@@ -44,7 +44,19 @@ class PracticeBlock():
             practice_trial = PracticeTrial(
                 self.parent, self.experiment, self.exp_info, trial
             )
-            practice_trial.begin_trial()
+            trial_pairs = dict(trial)
+
+            failed_trial = practice_trial.begin_trial()
+
+            while not failed_trial:
+                trial = dict(trial_pairs)
+
+                self.parent.display_message('GET READY', time=0.5)#3)
+
+                practice_trial = PracticeTrial(
+                    self.parent, self.experiment, self.exp_info, trial
+                )
+                failed_trial = practice_trial.begin_trial()
 
 class PracticeTrial():
     def __init__(self, parent, experiment, exp_info, trial):
@@ -68,23 +80,18 @@ class PracticeTrial():
         self.sentence_progress = visual.TextStim(
             win=self.window,    name='message', text='',
             font='Songti SC', pos=(-0.9, 0.75),         height=0.10,
-            wrapWidth=0.8,     color=(-1,-1,-1),   colorSpace='rgb',
+            wrapWidth=1.8,     color=(-1,-1,-1),   colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
             autoLog=False, alignHoriz='left'
         )
+        self.progress_list = []
 
         self.trial_clock = core.Clock()
         self.pair_clock = core.Clock()
 
         self.trial = data.TrialHandler(
             nReps=1, method='sequential', extraInfo=self.exp_info,
-            trialList=self.sentence, name='sentence_trial'#,
-            # dataTypes=[
-            #     'pair_correct', 'pair_distractor',
-            #     'target_pos', 'target_pos.verbose',
-            #     'resp', 'resp.acc', 'resp.RT', 'resp.verbose',
-            #     'prev_pos', 'prev_resp'
-            # ]
+            trialList=self.sentence, name='sentence_trial'
         )
         self.experiment.addLoop(self.trial)
 
@@ -116,12 +123,28 @@ class PracticeTrial():
 
                 self.show_trial_feedback(acc, target_pos)
 
+                if not acc and self.trial_num >= 7:
+                    self.clear_pair()
+                    self.reset_displays()
+
+                    self.window.color = (1, -1, -1)
+                    self.parent.display_message('INCORRECT!', time=2)
+                    self.window.color = (1, 1, 1)
+
+                    return False
+
             self.clear_pair()
             self.update_progress(pair['pair_correct'])
 
             self.parent.experiment.nextEntry()
 
+        self.window.color = (-1, 1, -1)
+        self.parent.display_message('CORRECT!', time=2)
+        self.window.color = (1, 1, 1)
+
         self.reset_displays()
+
+        return True
 
     def show_trial_feedback(self, accuracy, target_pos):
         if not accuracy:
@@ -135,19 +158,21 @@ class PracticeTrial():
 
             if self.trial_num <= 5:
                 correct_text.color = (-1, -1, -1)
-                # distractor_text.opacity = 0.25
                 distractor_text.color = (-0.5, -1, -1)
 
             distractor_text.autoDraw = True
             correct_text.autoDraw = True
 
             self.sentence_progress.height = 0.2
+            self.sentence_progress.pos = (0, 0.5)
+            self.sentence_progress.alignHoriz = 'center'
+
             for i in range(5):
                 if self.trial_num <= 5:
-                    correct_text.height = 0.35
+                    # correct_text.height = 0.35
                     correct_text.bold = True
                     self.flip(15)
-                    correct_text.height = 0.25
+                    # correct_text.height = 0.25
                     correct_text.bold = False
                 self.flip(15)
 
@@ -170,33 +195,37 @@ class PracticeTrial():
         self.text_left.draw()
         self.text_right.draw()
 
-        self.sentence_progress.text = ''
-        self.sentence_progress.size = 0.1
         self.sentence_progress.autoDraw = False
         self.sentence_progress.draw()
+
         self.flip()
 
     def show_pair(self, pair, target_pos):
         if target_pos == 0:
-            self.text_left.text = u'' + pair['pair_correct']
-            self.text_right.text = u'' + pair['pair_distractor']
-            if self.trial_num <= 3:
-                self.text_left.color = (-1, 0.5, -1)
-                self.text_right.color = (-1, -1, -1)
-
-            if self.trial_num <= 6:
-                self.text_left.opacity = 1.0
-                self.text_right.opacity = 0.7
+            correct_text = self.text_left
+            distractor_text = self.text_right
         else:
-            self.text_left.text = u'' + pair['pair_distractor']
-            self.text_right.text = u'' + pair['pair_correct']
-            if self.trial_num <= 3:
-                self.text_left.color = (-1, -1, -1)
-                self.text_right.color = (-1, 0.5, -1)
+            correct_text = self.text_right
+            distractor_text = self.text_left
 
-            if self.trial_num <= 6:
-                self.text_left.opacity = 0.7
-                self.text_right.opacity = 1.0
+        # if target_pos == 0:
+        correct_text.text = u'' + pair['pair_correct']
+        distractor_text.text = u'' + pair['pair_distractor']
+
+        if self.trial_num <= 2:
+            correct_text.color = (-1, 0.5, -1)
+            distractor_text.color = (-1, -1, -1)
+
+        if self.trial_num <= 4:
+            correct_text.height = 0.25
+            distractor_text.height = 0.2
+
+            correct_text.opacity = 1.0
+            distractor_text.opacity = 0.7
+
+        if self.trial_num <= 6:
+            correct_text.opacity = 1.0
+            distractor_text.opacity = 0.9
 
         self.text_left.draw()
         self.text_right.draw()
@@ -212,18 +241,34 @@ class PracticeTrial():
         self.text_left.opacity = 1.0
         self.text_right.opacity = 1.0
 
+        self.text_left.height = 0.25
+        self.text_right.height = 0.25
+
         self.text_left.draw()
         self.text_right.draw()
+
+        self.sentence_progress.text = ''
+        self.sentence_progress.size = 0.1
+        self.sentence_progress.pos = (-0.9, 0.75)
+        self.sentence_progress.height = 0.10
+        self.sentence_progress.alignHoriz = 'left'
+        self.sentence_progress.draw()
 
         self.flip()
 
     def update_progress(self, word):
-        if self.trial_num > 5:
+        if self.trial_num >= 8:
             return
 
-        self.sentence_progress.text = u'{}{}'.format(
-            self.sentence_progress.text, word
-        )
+        self.progress_list.append(word)
+
+        if self.trial_num >= 5:
+            if len(self.progress_list) > 3:
+                self.progress_list[-4] = u'\u3000' * len(self.progress_list[-4])
+        self.sentence_progress.text = u' '.join(self.progress_list)
+        # self.sentence_progress.text = u'{}{}'.format(
+        #     self.sentence_progress.text, word
+        # )
         self.sentence_progress.height = 0.1
         self.sentence_progress.draw()
         self.sentence_progress.autoDraw = True
