@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function
-from psychopy import locale_setup, visual, core, data, event, logging#, sound, gui
+from psychopy import locale_setup, visual, core, data, event, logging, sound#, gui
 from psychopy.constants import (NOT_STARTED, STARTED, PLAYING, PAUSED,
                                 STOPPED, FINISHED, PRESSED, RELEASED, FOREVER)
 
@@ -20,7 +20,7 @@ TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
 # Speed constants
-SPEED_MULTIPLIER = 0.1
+SPEED_MULTIPLIER = 1
 
 class Instructions():
     def __init__(self, parent, exp_info):
@@ -30,9 +30,11 @@ class Instructions():
         self.window = self.parent.window
 
         self.prepare_visuals()
+        self.prepare_audio()
 
     def begin_instructions(self):
         # self.paragraph.text = u'In this experiment, you will be asked to read sentences in Mandarin. '
+        self.play_instructions(1)
         self.paragraph.text = (
             u'在这个实验中，你将阅读一些中文句子。'
         )
@@ -45,6 +47,7 @@ class Instructions():
         #     u'in a sentence will appear beside an unrelated word that does ' +
         #     u'that does not fit into the sentence.'
         # )
+        self.play_instructions(2)
         self.paragraph.text = (
             u'句子中的词将会一个一个呈现。每一个适合语\u2028' +
             u'境的词将会和一个不适合语境的词同时出现。'
@@ -56,16 +59,18 @@ class Instructions():
         #     u'You will do this by pressing the button which corresponds to the side ' +
         #     u'that the correct word is on.'
         # )
+        self.play_instructions(3)
         self.paragraph.text = (
             u'你需要做的就是选出适合语境那个词。你将按相应的键\u2028' +
             u'来选择正确的词。'
         )
-        self.flipper(15 * SPEED_MULTIPLIER)
+        self.flipper(10 * SPEED_MULTIPLIER)
 
         # self.paragraph.text = (
         #     u'To choose the word that is on the left side of the screen, ' +
         #     u'press the button that is on the left side of the response box.'
         # )
+        self.play_instructions(4)
         self.paragraph.text = u'如果要选择左边的词，按左键。'
         self.flipper(3 * SPEED_MULTIPLIER)
         draw = True
@@ -83,6 +88,7 @@ class Instructions():
         #     u'To choose the word that is on the right side of the screen, ' +
         #     u'press the button that is on the right side of the response box.'
         # )
+        self.play_instructions(5)
         self.paragraph.text = u'如果要选择右边的词，按右键。'
         self.flipper(3 * SPEED_MULTIPLIER)
         draw = True
@@ -106,6 +112,7 @@ class Instructions():
         #     u'Before each block of sentences begins, ' +
         #     u'a message will appear on screen which states "GET READY"'
         # )
+        self.play_instructions(6)
         self.paragraph.text = u'每个句子开始之前，你会看到“请准备”的提示。'
         self.paragraph.pos= (-0.8, 0.9)
         self.paragraph.autoDraw = True
@@ -123,6 +130,7 @@ class Instructions():
         #     u'fixation cross (+) appears on screen, the first sentence is about '+
         #     u'to begin. Here\'s an example:'
         # )
+        self.play_instructions(7)
         self.paragraph.text = (
             u'紧跟着你会看到空白屏幕。然后“+” 会出现在屏幕上，\u2028' +
             u'第一个句子即将开始。我们来看一个例子：'
@@ -134,18 +142,19 @@ class Instructions():
         self.message.autoDraw = False
         self.flipper(1)
         self.fixation.autoDraw = True
-        self.flipper(5 * SPEED_MULTIPLIER)
+        self.flipper(3 * SPEED_MULTIPLIER)
 
         # self.paragraph.text = (
         #     u'The first word in each sentence will be presented beside a series of X symbols.'
         # )
+        self.play_instructions(8)
         self.paragraph.text = (
             u'你需要按相应的键选择正确的词。\u2028' +
             u'每个句子的第一个词的选项里\u2028' +
             u'只有一是词，你只需要选择这个词。'
         )
         self.paragraph.autoDraw = True
-        self.flipper(5 * SPEED_MULTIPLIER)
+        self.flipper(9 * SPEED_MULTIPLIER)
 
         self.text_left.text = 'XXX'
         # self.text_right.text = 'The'
@@ -168,6 +177,7 @@ class Instructions():
         # self.paragraph.text = (
         #     u'Press the button on the right to choose that word.'
         # )
+        self.play_instructions(9)
         self.paragraph.text = u'按左键选择左边的词。'
         self.paragraph.pos = (-0.9, -0.6)
 
@@ -187,6 +197,7 @@ class Instructions():
         #     u'Then, you will see two new words. Only one of these words can come after the ' +
         #     u'previous word that you chose. Here\'s an example:'
         # )
+        self.play_instructions(10)
         self.paragraph.text = (
             u'你做好选择之后，两个词会消失，“+”会出现。\u2028' +
             u'然后你会看到两个新词，其中一个更接应\u2028' +
@@ -216,13 +227,15 @@ class Instructions():
         #     u'the button on the left. You would choose this because "The boy..." is ' +
         #     u'correct grammar, while "The jumped..." is not a legal sentence.'
         # )
+        self.play_instructions(11)
         self.paragraph.text = u'按左键选择左边的词。\u2028因为“一个男孩” 是正确语法而“一个跳”不是。'
-        self.flipper(15 * SPEED_MULTIPLIER)
+        self.flipper(11 * SPEED_MULTIPLIER)
 
         self.paragraph.pos = (-0.5, -0.6)
         # self.paragraph.text = (
         #     u'Press the button on the left to choose that word.'
         # )
+        self.play_instructions(12)
         self.paragraph.text = u'按左键选择左边的词。'
 
         draw = True
@@ -241,6 +254,7 @@ class Instructions():
         #     u'Good! Now you will see an example of responses to an entire sentence. ' +
         #     u'Please watch the screen carefully, but do not make any responses.'
         # )
+        self.play_instructions(13)
         self.paragraph.text = (
             u'很好！\u2028现在我们来看一个完整' +
             u'句子词汇选择的例子。\u2028' +
@@ -311,6 +325,7 @@ class Instructions():
         # self.paragraph.text = (
         #     u'After you reach the end of the sentence, a feedback message will be displayed.'
         # )
+        self.play_instructions(14)
         self.paragraph.text = u'当你选好每个句子的最后一个词，\u2028你会看到一个反馈消息。'
 
         # self.message.text = u'Correct!'
@@ -324,12 +339,13 @@ class Instructions():
         # self.paragraph.text = (
         #     u'If you choose the wrong word in the middle of a sentence, the trial will end:'
         # )
+        self.play_instructions(15)
         self.paragraph.text = (
             u'如果你在句中选择了错误的词，\u2028' +
             u'这个句子会半途而废：\u2028' +
             u'然后你会看到 “错误！” 的提示。'
         )
-        self.flipper(5 * SPEED_MULTIPLIER)
+        self.flipper(7 * SPEED_MULTIPLIER)
 
         self.fixation.autoDraw = True
         self.flipper(0.5)
@@ -370,6 +386,7 @@ class Instructions():
         # self.paragraph.text = (
         #     u'If you have any questions about this experiment, please ask the experimenter now. '
         # )
+        self.play_instructions(16)
         self.paragraph.text = u'如果你有任何问题，请现在提问。'
         self.flipper(5 * SPEED_MULTIPLIER)
 
@@ -382,6 +399,7 @@ class Instructions():
         #     u'If you would like to see these instructions again, press the button on the left. ' +
         #     u'If you are ready to try a few practice trials, press the button on the right.'
         # )
+        self.play_instructions(17)
         self.paragraph.text = (
             u'如果你还需要看一遍实验介绍，按左键。\u2028' +
             u'如果你没有问题已经准备好，按右键。'
@@ -400,7 +418,20 @@ class Instructions():
         self.text_right.autoDraw = True
         self.fixation.autoDraw = True
 
-        self.flipper(10 * SPEED_MULTIPLIER)
+        self.flipper(12 * SPEED_MULTIPLIER)
+
+    def prepare_audio(self):
+        self.instructions_audio = {}
+
+        for i in range(1, 18):
+            self.instructions_audio[i] = sound.Sound(u'{}{}{}{}{}{}{}{}{}'.format(
+                self.parent.pwd, os.sep,
+                u'data', os.sep, u'instructions_audio',
+                os.sep, u'edited', os.sep, u'instr_{:0>2}.wav'.format(i)
+            ))
+
+    def play_instructions(self, i):
+        self.instructions_audio[i].play()
 
     def prepare_visuals(self):
         self.paragraph = visual.TextStim(
