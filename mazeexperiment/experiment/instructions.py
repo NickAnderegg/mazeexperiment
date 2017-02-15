@@ -436,7 +436,7 @@ class Instructions():
     def prepare_visuals(self):
         self.paragraph = visual.TextStim(
             win=self.window,  name='paragraph_text',text='',
-            font='Songti SC', pos=(-0.8, 0),         height=0.1,
+            font='SimSun', pos=(-0.8, 0),         height=0.1,
             wrapWidth=1.6,    color=(-1,-1,-1),   colorSpace='rgb',
             opacity=1,        depth=0.0,          ori=0,
             alignHoriz='left', alignVert='top'
@@ -478,7 +478,7 @@ class Instructions():
 
         self.message = visual.TextStim(
             win=self.window,    name='message', text='',
-            font='Songti SC', pos=(0, 0),         height=0.25,
+            font='SimSun', pos=(0, 0),         height=0.25,
             wrapWidth=None,     color=(-1,-1,-1),   colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0
         )
@@ -492,7 +492,7 @@ class Instructions():
 
         self.text_left = visual.TextStim(
             win=self.window,    name='text_left',   text='',
-            font='Songti SC',   pos=(-0.1, 0),      height=0.25,
+            font='SimSun',   pos=(-0.1, 0),      height=0.25,
             wrapWidth=None,     color=(-1, -1, -1), colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
             alignHoriz='right'
@@ -500,7 +500,7 @@ class Instructions():
 
         self.text_right = visual.TextStim(
             win=self.window,    name='text_right',  text='',
-            font='Songti SC',   pos=(0.1, 0),       height=0.25,
+            font='SimSun',   pos=(0.1, 0),       height=0.25,
             wrapWidth=None,     color=(-1, -1, -1), colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
             alignHoriz='left'

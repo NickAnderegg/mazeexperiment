@@ -78,7 +78,7 @@ class PracticeTrial():
 
         self.sentence_progress = visual.TextStim(
             win=self.window,    name='message', text='',
-            font='Songti SC', pos=(-0.9, 0.75),         height=0.10,
+            font='SimSun', pos=(-0.9, 0.75),         height=0.10,
             wrapWidth=1.8,     color=(-1,-1,-1),   colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
             autoLog=False, alignHoriz='left'

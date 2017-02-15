@@ -91,8 +91,8 @@ class Experiment():
         # self.handler.addLoop(self.trial_handler)
         # self.trial_handler.setExp(self.handler)
 
-        self.t1 = visual.TextStim(self.window, text='', font='Songti SC', pos=(-0.5, 0), height=0.25, color=(-1, -1, -1))
-        self.t2 = visual.TextStim(self.window, text='', font='Songti SC', pos=(0.5, 0), height=0.25, color=(-1, -1, -1))
+        self.t1 = visual.TextStim(self.window, text='', font='SimSun', pos=(-0.5, 0), height=0.25, color=(-1, -1, -1))
+        self.t2 = visual.TextStim(self.window, text='', font='SimSun', pos=(0.5, 0), height=0.25, color=(-1, -1, -1))
 
         self.fixation = visual.TextStim(self.window, text='+', font='Courier New', pos=(0, 0), height=0.25, color=(-1, -1, -1))
         self.message = visual.TextStim(self.window, text='', font='Courier New', pos=(0, 0), height=0.25, color=(-1,-1,-1))

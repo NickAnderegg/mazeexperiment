@@ -22,7 +22,7 @@ from .practicetrials import PracticeBlock
 __version__ = "1.0.0"
 
 class Experiment():
-    def __init__(self, exp_name=None, pwd=None):
+    def __init__(self, exp_name=None, pwd=None, use_srbox=False):
 
         if pwd is None:
             self.pwd = os.path.dirname(os.path.abspath(__file__)).decode(sys.getfilesystemencoding())
@@ -199,7 +199,7 @@ class Experiment():
 
         self.text_left = visual.TextStim(
             win=self.window,    name='text_left',   text='',
-            font='Songti SC',   pos=(-0.1, 0),      height=0.25,
+            font='SimSun',   pos=(-0.1, 0),      height=0.25,
             wrapWidth=None,     color=(-1, -1, -1), colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
             alignHoriz='right', autoLog=False
@@ -207,7 +207,7 @@ class Experiment():
 
         self.text_right = visual.TextStim(
             win=self.window,    name='text_right',  text='',
-            font='Songti SC',   pos=(0.1, 0),       height=0.25,
+            font='SimSun',   pos=(0.1, 0),       height=0.25,
             wrapWidth=None,     color=(-1, -1, -1), colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
             alignHoriz='left', autoLog=False
