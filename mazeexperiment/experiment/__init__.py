@@ -110,9 +110,12 @@ class Experiment():
 
         self.participant_id = int(self.exp_info['participant'])
 
-        self.use_srbox = False
-        if self.use_srbox:
-            self.srbox = SRBox('COM1', 19200, 0)
+        if 'darwin' in self.exp_info['platform'] or 'linux' in self.exp_info['platform']:
+            self.use_srbox = False
+        else:
+            self.use_srbox = use_srbox
+            if self.use_srbox:
+                self.srbox = SRBox('COM1', 19200, 0)
 
         data_file_stem = u'{}_{}_{}'.format(
             self.exp_name,

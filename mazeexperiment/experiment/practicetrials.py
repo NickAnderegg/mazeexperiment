@@ -277,11 +277,15 @@ class PracticeTrial():
         self.flip()
 
     def get_response(self, target_pos):
-        response, response_time = event.waitKeys(keyList=['c', 'm'], timeStamped=self.pair_clock)[0]
+        if self.use_srbox:
+            response, response_time = self.srbox.waitKeys(keyList=[1, 5], timeStamped=self.pair_clock)
+            response = response[0]
+        else:
+            response, response_time = event.waitKeys(keyList=['c', 'm'], timeStamped=self.pair_clock)[0]
 
-        if response == 'c':
+        if response in ('c', 1):
             response = 0
-        elif response == 'm':
+        elif response in ('m', 5):
             response = 1
 
         if response == target_pos:

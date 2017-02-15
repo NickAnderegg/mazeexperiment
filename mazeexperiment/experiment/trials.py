@@ -12,6 +12,8 @@ from datetime import datetime
 import time
 import os, sys
 
+from .srbox import SRBox
+
 class SentenceBlock():
     def __init__(self, parent, experiment, exp_info, sentence_list):
         logging.debug(u'Entered SentenceBlock()')
@@ -22,6 +24,9 @@ class SentenceBlock():
         self.parent = parent
 
         self.window = self.parent.window
+        self.use_srbox = self.parent.use_srbox
+        if self.use_srbox:
+            self.srbox = self.parent.srbox
 
         self.block_clock = core.Clock()
 
@@ -120,6 +125,10 @@ class SentenceTrial():
         self.text_left = self.parent.text_left
         self.text_right = self.parent.text_right
         self.acc_feedback = self.parent.acc_feedback
+
+        self.use_srbox = self.parent.use_srbox
+        if self.use_srbox:
+            self.srbox = self.parent.srbox
 
         self.trial_clock = core.Clock()
         self.pair_clock = core.Clock()
@@ -274,13 +283,18 @@ class SentenceTrial():
 
     def get_response(self, target_pos):
         logging.exp(u'Waiting for response...')
-        response, response_time = event.waitKeys(keyList=['c', 'm'], timeStamped=self.pair_clock)[0]
+
+        if self.use_srbox:
+            response, response_time = self.srbox.waitKeys(keyList=[1, 5], timeStamped=self.pair_clock)
+            response = response[0]
+        else:
+            response, response_time = event.waitKeys(keyList=['c', 'm'], timeStamped=self.pair_clock)[0]
         logging.exp(u'Key presses received')
         # response_time = self.pair_clock.getTime()
 
-        if response == 'c':
+        if response in ('c', 1):
             response = 0
-        elif response == 'm':
+        elif response in ('m', 5):
             response = 1
 
         logging.exp(u'Kepress position: {}'.format(response))
