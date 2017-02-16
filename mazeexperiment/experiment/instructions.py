@@ -24,6 +24,7 @@ SPEED_MULTIPLIER = 1
 
 class Instructions():
     def __init__(self, parent, exp_info):
+        logging.debug(u'Entered instructions class.')
         self.exp_info = exp_info
         self.parent = parent
 
@@ -421,17 +422,35 @@ class Instructions():
         self.flipper(12 * SPEED_MULTIPLIER)
 
     def prepare_audio(self):
+        logging.debug(u'Preparing audio for playback...')
         self.instructions_audio = {}
 
         for i in range(1, 18):
+            logging.debug(u'Loading audio file instr_{:0>2}.wav...'.format(i))
             self.instructions_audio[i] = sound.Sound(u'{}{}{}{}{}{}{}{}{}'.format(
                 self.parent.pwd, os.sep,
                 u'data', os.sep, u'instructions_audio',
                 os.sep, u'edited', os.sep, u'instr_{:0>2}.wav'.format(i)
             ))
+            logging.debug(u'Loaded audio file instr_{:0>2}.wav.'.format(i))
+
+        self.current_audio = False
 
     def play_instructions(self, i):
-        self.instructions_audio[i].play()
+        try:
+            self.instructions_audio[i].play()
+            self.current_audio = self.instructions_audio[i]
+        except KeyError:
+            pass
+
+
+    def abort_instructions(self):
+        try:
+            for key in self.instructions_audio.keys():
+                self.instructions_audio[key].stop()
+                del self.instructions_audio[key]
+        except:
+            pass
 
     def prepare_visuals(self):
         self.paragraph = visual.TextStim(
@@ -520,7 +539,17 @@ class Instructions():
     def flipper(self, time):
         frames = int(round(time / self.parent.frame_dur))
         for i in range(frames):
+            self.check_abort()
             self.window.flip()
+
+    def check_abort(self):
+        keys = event.getKeys(keyList=['escape'], modifiers=True)
+        if keys and (keys[0][0] == 'escape' and keys[0][1]['ctrl'] and keys[0][1]['alt']):
+            try:
+                self.abort_instructions()
+                self.parent.abort()
+            except:
+                pass
 
     def animated_move(self, start, end, duration):
         frames = int(round(duration / self.parent.frame_dur))

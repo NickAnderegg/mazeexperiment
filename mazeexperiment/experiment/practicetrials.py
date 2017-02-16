@@ -23,6 +23,10 @@ class PracticeBlock():
 
         self.window = self.parent.window
 
+        self.use_srbox = self.parent.use_srbox
+        if self.use_srbox:
+            self.srbox = self.parent.srbox
+
         self.block_clock = core.Clock()
 
         self.trials = data.TrialHandler(
@@ -75,6 +79,10 @@ class PracticeTrial():
         self.text_left = self.parent.text_left
         self.text_right = self.parent.text_right
         self.acc_feedback = self.parent.acc_feedback
+
+        self.use_srbox = self.parent.use_srbox
+        if self.use_srbox:
+            self.srbox = self.parent.srbox
 
         self.sentence_progress = visual.TextStim(
             win=self.window,    name='message', text='',
@@ -296,7 +304,18 @@ class PracticeTrial():
     def flip(self, count=1):
         # self.sentence_progress.draw()
         for i in range(count):
+            self.parent.check_abort()
             self.window.flip()
+
+    # def check_abort(self):
+    #     keys = event.getKeys(keyList=['escape'], modifiers=True)
+    #     if keys and (keys[0][0] == 'escape' and keys[0][1]['ctrl'] and keys[0][1]['alt']):
+    #         try:
+    #             self.abort_instructions()
+    #             self.window.close()
+    #         except:
+    #             pass
+    #         core.quit()
 
     def show_fixation(self, time):
         frames = int(round(time / self.parent.frame_dur))

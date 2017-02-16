@@ -88,10 +88,10 @@ class Experiment():
         # self.get_session_info()
 
         self.window = visual.Window(
-            size=(1440, 900), fullscr=True, screen=0,
+            size=(1440, 900), fullscr=False, screen=0,
             allowGUI=True, allowStencil=False,
             monitor=u'testMonitor', color=[1,1,1], colorSpace='rgb',
-            blendMode='avg', useFBO=True)
+            blendMode='avg', useFBO=True, winType='pyglet')
 
         runtime = info.RunTimeInfo(version=self.exp_info['version'], win=self.window)
 
@@ -112,10 +112,14 @@ class Experiment():
 
         if 'darwin' in self.exp_info['platform'] or 'linux' in self.exp_info['platform']:
             self.use_srbox = False
+            print('Not using SRBOX')
         else:
             self.use_srbox = use_srbox
             if self.use_srbox:
                 self.srbox = SRBox('COM1', 19200, 0)
+                self.srbox.set_lights([1,1,1,1,1], update=True)
+                core.wait(0.5)
+                self.srbox.set_lights([0,0,0,0,0], update=True)
 
         data_file_stem = u'{}_{}_{}'.format(
             self.exp_name,
@@ -171,8 +175,8 @@ class Experiment():
         # self.load_latin_square()
         # self.load_trials()
         # self.load_practice_trials()
-        #
-        # practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
+
+        practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
 
         # sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials)
 
@@ -185,6 +189,14 @@ class Experiment():
         self.experiment.abort()  # or data files will save again on exit
         self.window.close()
         core.quit()
+
+    def check_abort(self):
+        keys = event.getKeys(keyList=['escape'], modifiers=True)
+        if keys and (keys[0][0] == 'escape' and keys[0][1]['ctrl'] and keys[0][1]['alt']):
+            try:
+                self.abort()
+            except:
+                pass
 
     def get_session_info(self):
         dlg = gui.DlgFromDict(

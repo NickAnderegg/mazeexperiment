@@ -336,4 +336,14 @@ class SentenceTrial():
         self.window.logOnFlip(u'End show blank screen', logging.EXP)
 
     def flip(self):
+        self.parent.check_abort()
         self.window.flip()
+
+    # def check_abort(self):
+    #     keys = event.getKeys(keyList=['escape'], modifiers=True)
+    #     if keys and (keys[0][0] == 'escape' and keys[0][1]['ctrl'] and keys[0][1]['alt']):
+    #         try:
+    #             self.window.close()
+    #         except:
+    #             pass
+    #         core.quit()
