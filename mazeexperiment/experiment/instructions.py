@@ -441,7 +441,7 @@ class Instructions():
             self.instructions_audio[i].play()
             self.current_audio = self.instructions_audio[i]
         except KeyError:
-            pass
+            return
 
 
     def abort_instructions(self):

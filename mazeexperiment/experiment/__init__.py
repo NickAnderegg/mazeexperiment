@@ -168,8 +168,8 @@ class Experiment():
         self.routine_timer  = core.CountdownTimer()
         logging.flush()
 
-        instructions = Instructions(self, self.exp_info)
-        instructions.begin_instructions()
+        # instructions = Instructions(self, self.exp_info)
+        # instructions.begin_instructions()
 
         self.prepare_visuals()
         self.load_latin_square()
@@ -278,7 +278,7 @@ class Experiment():
 
         first_row = self.participant_id % 20
         # last_row = (first_row + 5) % 20
-        last_row = first(row + 4) % 20
+        last_row = (first_row + 4) % 20
 
         logging.info(u'Latin square first row: {}, last row: {}'.format(first_row, last_row-1))
 

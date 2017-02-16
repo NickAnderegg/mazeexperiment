@@ -226,14 +226,14 @@ class SentenceTrial():
         logging.exp(u'Pair target position: {}'.format(target_pos))
         if target_pos == 0:
             self.text_left.text = u'' + pair['pair_correct']
-            self.text_left.color = (-1, -0.50, -1)
+            # self.text_left.color = (-1, -0.50, -1)
             self.text_right.text = u'' + pair['pair_distractor']
-            self.text_right.color = (-1, -1, -1)
+            # self.text_right.color = (-1, -1, -1)
         else:
             self.text_left.text = u'' + pair['pair_distractor']
-            self.text_left.color = (-1, -1, -1)
+            # self.text_left.color = (-1, -1, -1)
             self.text_right.text = u'' + pair['pair_correct']
-            self.text_right.color = (-1, -0.50, -1)
+            # self.text_right.color = (-1, -0.50, -1)
 
         logging.info(u'{}: Set text to "{}"'.format(self.text_left.name, self.text_left.text))
         logging.info(u'{}: Set text to "{}"'.format(self.text_right.name, self.text_right.text))
