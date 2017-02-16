@@ -171,14 +171,14 @@ class Experiment():
         instructions = Instructions(self, self.exp_info)
         instructions.begin_instructions()
 
-        # self.prepare_visuals()
-        # self.load_latin_square()
-        # self.load_trials()
+        self.prepare_visuals()
+        self.load_latin_square()
+        self.load_trials()
         # self.load_practice_trials()
 
-        practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
+        # practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
 
-        # sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials)
+        sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials)
 
         logging.flush()
 
