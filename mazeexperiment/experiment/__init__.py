@@ -88,7 +88,7 @@ class Experiment():
         # self.get_session_info()
 
         self.window = visual.Window(
-            size=(1440, 900), fullscr=False, screen=0,
+            size=(1440/2, 900/2), fullscr=False, screen=0,
             allowGUI=True, allowStencil=False,
             monitor=u'testMonitor', color=[1,1,1], colorSpace='rgb',
             blendMode='avg', useFBO=True, winType='pyglet')
@@ -116,7 +116,7 @@ class Experiment():
         else:
             self.use_srbox = use_srbox
             if self.use_srbox:
-                self.srbox = SRBox('COM1', 19200, 0)
+                self.srbox = SRBox('COM4', 19200, 0)
                 self.srbox.set_lights([1,1,1,1,1], update=True)
                 core.wait(0.5)
                 self.srbox.set_lights([0,0,0,0,0], update=True)
@@ -171,14 +171,14 @@ class Experiment():
         instructions = Instructions(self, self.exp_info)
         instructions.begin_instructions()
 
-        self.prepare_visuals()
-        self.load_latin_square()
-        self.load_trials()
+        # self.prepare_visuals()
+        # self.load_latin_square()
+        # self.load_trials()
         # self.load_practice_trials()
 
         # practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
 
-        sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials)
+        # sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials)
 
         logging.flush()
 
@@ -186,9 +186,15 @@ class Experiment():
         self.experiment.saveAsWideText('{}.csv'.format(self.data_file_stem))
         logging.flush()
         # make sure everything is closed down
-        self.experiment.abort()  # or data files will save again on exit
-        self.window.close()
-        core.quit()
+        try:
+            self.experiment.abort()  # or data files will save again on exit
+        except: pass
+        try:
+            self.window.close()
+        except: pass
+        try:
+            core.quit()
+        except: pass
 
     def check_abort(self):
         keys = event.getKeys(keyList=['escape'], modifiers=True)
@@ -212,9 +218,14 @@ class Experiment():
 
     def prepare_visuals(self):
 
+        if 'darwin' in self.exp_info['platform']:
+            CHINESE_FONT = 'STFangSong'
+        elif 'win' in self.exp_info['platform']:
+            CHINESE_FONT = 'FangSong'
+
         self.text_left = visual.TextStim(
             win=self.window,    name='text_left',   text='',
-            font='SimSun',   pos=(-0.1, 0),      height=0.25,
+            font=CHINESE_FONT,   pos=(-0.1, 0),      height=0.25,
             wrapWidth=None,     color=(-1, -1, -1), colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
             alignHoriz='right', autoLog=False
@@ -222,7 +233,7 @@ class Experiment():
 
         self.text_right = visual.TextStim(
             win=self.window,    name='text_right',  text='',
-            font='SimSun',   pos=(0.1, 0),       height=0.25,
+            font=CHINESE_FONT,   pos=(0.1, 0),       height=0.25,
             wrapWidth=None,     color=(-1, -1, -1), colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
             alignHoriz='left', autoLog=False

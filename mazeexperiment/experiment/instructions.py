@@ -20,7 +20,7 @@ TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
 # Speed constants
-SPEED_MULTIPLIER = 1
+SPEED_MULTIPLIER = 0.1
 
 class Instructions():
     def __init__(self, parent, exp_info):
@@ -29,6 +29,19 @@ class Instructions():
         self.parent = parent
 
         self.window = self.parent.window
+        self.clock = self.parent.global_clock
+
+        self.use_srbox = self.parent.use_srbox
+        if self.use_srbox:
+            self.srbox = self.parent.srbox
+
+        self.srlight_status = {
+            'active': [0,0,0,0,0],
+            'mode': 'solid',
+            'blink_frame': 0
+        }
+
+        self.debug_mode = True
 
         self.prepare_visuals()
         self.prepare_audio()
@@ -65,7 +78,9 @@ class Instructions():
             u'你需要做的就是选出适合语境那个词。你将按相应的键\u2028' +
             u'来选择正确的词。'
         )
+        self.set_srlights('INDICATOR_BOTH', mode='blink')
         self.flipper(10 * SPEED_MULTIPLIER)
+        self.set_srlights('ALL_OFF')
 
         # self.paragraph.text = (
         #     u'To choose the word that is on the left side of the screen, ' +
@@ -75,11 +90,13 @@ class Instructions():
         self.paragraph.text = u'如果要选择左边的词，按左键。'
         self.flipper(3 * SPEED_MULTIPLIER)
         draw = True
+        self.set_srlights('INDICATOR_L', mode='blink')
         for i in range(20):
             self.draw_left_arrow(draw)
             self.flipper(0.25)
             draw = not draw
 
+        self.set_srlights('ALL_OFF')
         self.draw_left_arrow(False)
         self.paragraph.autoDraw = False
         self.flipper(1)
@@ -93,11 +110,13 @@ class Instructions():
         self.paragraph.text = u'如果要选择右边的词，按右键。'
         self.flipper(3 * SPEED_MULTIPLIER)
         draw = True
+        self.set_srlights('INDICATOR_R', mode='blink')
         for i in range(20):
             self.draw_right_arrow(draw)
             self.flipper(0.25)
             draw = not draw
 
+        self.set_srlights('ALL_OFF')
         self.draw_right_arrow(False)
         self.flipper(0.5)
 
@@ -172,8 +191,8 @@ class Instructions():
         # )
         # This sentence has been combined with the above translation
 
-        self.paragraph.autoDraw = True
-        self.flipper(3 * SPEED_MULTIPLIER)
+        # self.paragraph.autoDraw = True
+        # self.flipper(3 * SPEED_MULTIPLIER)
 
         # self.paragraph.text = (
         #     u'Press the button on the right to choose that word.'
@@ -183,11 +202,13 @@ class Instructions():
         self.paragraph.pos = (-0.9, -0.6)
 
         draw = True
+        self.set_srlights('INDICATOR_R', mode='blink')
         for i in range(20):
             self.draw_right_arrow(draw)
             self.flipper(0.25)
             draw = not draw
 
+        self.set_srlights('ALL_OFF')
         self.draw_right_arrow(False)
         self.flipper(0.5)
 
@@ -240,11 +261,13 @@ class Instructions():
         self.paragraph.text = u'按左键选择左边的词。'
 
         draw = True
+        self.set_srlights('INDICATOR_L', mode='blink')
         for i in range(20):
             self.draw_left_arrow(draw)
             self.flipper(0.25)
             draw = not draw
 
+        self.set_srlights('ALL_OFF')
         self.draw_left_arrow(False)
         self.text_left.autoDraw = False
         self.text_right.autoDraw = False
@@ -311,12 +334,16 @@ class Instructions():
 
             if target_pos == 0:
                 self.draw_left_arrow(True)
+                self.set_srlights('INDICATOR_L', mode='blink')
                 self.flipper(0.3)
                 self.draw_left_arrow(False)
+                self.set_srlights('ALL_OFF')
             else:
                 self.draw_right_arrow(True)
+                self.set_srlights('INDICATOR_R', mode='blink')
                 self.flipper(0.3)
                 self.draw_right_arrow(False)
+                self.set_srlights('ALL_OFF')
 
             self.text_left.autoDraw = False
             self.text_right.autoDraw = False
@@ -334,7 +361,9 @@ class Instructions():
         self.message.color = (-1, 1, -1)
         self.message.autoDraw = True
 
+        self.set_srlights('FEEDBACK_CORRECT', mode='blink')
         self.flipper(5 * SPEED_MULTIPLIER)
+        self.set_srlights('ALL_OFF', mode='blink')
         self.message.autoDraw = False
 
         # self.paragraph.text = (
@@ -352,6 +381,8 @@ class Instructions():
         self.flipper(0.5)
         self.fixation.autoDraw = False
 
+        # self.text_left.font = 'Times New Roman'
+        # self.text_right.font = 'Times New Roman'
         self.text_left.text = u'✔✔✔'
         self.text_right.text = u'✘✘✘'
         self.text_left.autoDraw = True
@@ -359,11 +390,15 @@ class Instructions():
         self.flipper(3)
 
         self.draw_right_arrow(True)
+        self.set_srlights('INDICATOR_R')
         self.flipper(1)
+        self.set_srlights('ALL_OFF')
         self.draw_right_arrow(False)
 
         self.text_left.autoDraw = False
         self.text_right.autoDraw = False
+        # self.text_left.font = 'MingLiU'
+        # self.text_right.font = 'MingLiU'
         self.window.color = (1, -1, -1)
         self.flipper(0.2)
         self.window.color = (1, 1, 1)
@@ -376,10 +411,12 @@ class Instructions():
         self.message.text = TEXT_FEEDBACK_INCORRECT
         self.message.color = (1, -1, -1)
         self.message.autoDraw = True
+        self.set_srlights('FEEDBACK_INCORRECT', mode='blink')
 
         self.flipper(5 * SPEED_MULTIPLIER)
 
         self.message.autoDraw = False
+        self.set_srlights('ALL_OFF')
 
         self.paragraph.autoDraw = True
         self.paragraph.pos = (-0.8, 0)
@@ -406,7 +443,6 @@ class Instructions():
             u'如果你没有问题已经准备好，按右键。'
         )
 
-
         self.text_left.height = 0.12
         self.text_right.height = 0.12
 
@@ -419,7 +455,75 @@ class Instructions():
         self.text_right.autoDraw = True
         self.fixation.autoDraw = True
 
-        self.flipper(12 * SPEED_MULTIPLIER)
+        self.flipper(0.1 * SPEED_MULTIPLIER)
+
+        # self.flipper(12 * SPEED_MULTIPLIER)
+        if self.use_srbox:
+            response = self.srbox.waitKeys(keyList=[1, 5])[0]
+        else:
+            response = event.waitKeys(keyList=['c', 'm'])[0]
+
+        if response in ('c', 1):
+            self.begin_instructions()
+        elif response in ('m', 5):
+            return
+
+    def _debug_srlight_state(self, state):
+        if self.debug_mode:
+            print('{: >9.5f}\tSRBox Light State: {}'.format(self.clock.getTime(), state))
+
+    def _debug_srlight_setting(self, which):
+        if self.debug_mode:
+            print('{: >9.5f}\tSRBox Light Mode:  {}'.format(self.clock.getTime(), self.srlight_status['active']))
+            print('\t\tSetting:\t{}'.format(which))
+            print('\t\tMode:\t{}'.format(self.srlight_status['mode']))
+
+    def _srlights_off(self):
+        if self.use_srbox:
+            self.srbox.set_lights([0,0,0,0,0], update=True)
+
+        self._debug_srlight_state([0,0,0,0,0])
+
+
+    def _srlights_on(self):
+        if self.use_srbox:
+            self.srbox.set_lights(self.srlight_status['active'], update=True)
+
+        self._debug_srlight_state(self.srlight_status['active'])
+
+    def set_srlights(self, which, on=True, mode='solid'):
+        if not self.use_srbox and not self.debug_mode:
+            return
+
+        self.srlight_status['blink_frame'] = 0
+
+        if which == 'ALL_ON':
+            self.srlight_status['active'] = [1,1,1,1,1]
+            self.srlight_status['mode'] = 'solid'
+        elif which == 'ALL_OFF':
+            self.srlight_status['active'] = [0,0,0,0,0]
+            self.srlight_status['mode'] = 'solid'
+
+        elif which == 'INDICATOR_BOTH':
+            self.srlight_status['active'] = [int(on),0,0,0,int(on)]
+            self.srlight_status['mode'] = mode
+        elif which == 'INDICATOR_L':
+            self.srlight_status['active'] = [int(on),0,0,0,0]
+            self.srlight_status['mode'] = mode
+        elif which == 'INDICATOR_R':
+            self.srlight_status['active'] = [0,0,0,0,int(on)]
+            self.srlight_status['mode'] = mode
+
+        elif which == 'FEEDBACK_CORRECT':
+            self.srlight_status['active'] = [0,int(on),0,int(on),0]
+            self.srlight_status['mode'] = mode
+        elif which == 'FEEDBACK_INCORRECT':
+            self.srlight_status['active'] = [0,0,int(on),0,0]
+            self.srlight_status['mode'] = mode
+
+        self._debug_srlight_setting(which)
+        self._srlights_on()
+
 
     def prepare_audio(self):
         logging.debug(u'Preparing audio for playback...')
@@ -453,9 +557,14 @@ class Instructions():
             pass
 
     def prepare_visuals(self):
+        if 'darwin' in self.exp_info['platform']:
+            CHINESE_FONT = 'STFangSong'
+        elif 'win' in self.exp_info['platform']:
+            CHINESE_FONT = 'FangSong'
+
         self.paragraph = visual.TextStim(
             win=self.window,  name='paragraph_text',text='',
-            font='SimSun', pos=(-0.8, 0),         height=0.1,
+            font=CHINESE_FONT, pos=(-0.8, 0),         height=0.1,
             wrapWidth=1.6,    color=(-1,-1,-1),   colorSpace='rgb',
             opacity=1,        depth=0.0,          ori=0,
             alignHoriz='left', alignVert='top'
@@ -497,7 +606,7 @@ class Instructions():
 
         self.message = visual.TextStim(
             win=self.window,    name='message', text='',
-            font='SimSun', pos=(0, 0),         height=0.25,
+            font=CHINESE_FONT, pos=(0, 0),         height=0.25,
             wrapWidth=None,     color=(-1,-1,-1),   colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0
         )
@@ -511,7 +620,7 @@ class Instructions():
 
         self.text_left = visual.TextStim(
             win=self.window,    name='text_left',   text='',
-            font='SimSun',   pos=(-0.1, 0),      height=0.25,
+            font=CHINESE_FONT,   pos=(-0.1, 0),      height=0.25,
             wrapWidth=None,     color=(-1, -1, -1), colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
             alignHoriz='right'
@@ -519,7 +628,7 @@ class Instructions():
 
         self.text_right = visual.TextStim(
             win=self.window,    name='text_right',  text='',
-            font='SimSun',   pos=(0.1, 0),       height=0.25,
+            font=CHINESE_FONT,   pos=(0.1, 0),       height=0.25,
             wrapWidth=None,     color=(-1, -1, -1), colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
             alignHoriz='left'
@@ -541,15 +650,22 @@ class Instructions():
         for i in range(frames):
             self.check_abort()
             self.window.flip()
+            if (self.use_srbox or self.debug_mode) and self.srlight_status['mode'] == 'blink':
+                self.srlight_status['blink_frame'] += 1
+                if self.srlight_status['blink_frame'] % 40 == 0:
+                    self._srlights_on()
+                elif self.srlight_status['blink_frame'] % 20 == 0:
+                    self._srlights_off()
 
     def check_abort(self):
         keys = event.getKeys(keyList=['escape'], modifiers=True)
         if keys and (keys[0][0] == 'escape' and keys[0][1]['ctrl'] and keys[0][1]['alt']):
             try:
                 self.abort_instructions()
-                self.parent.abort()
             except:
                 pass
+
+            self.parent.abort()
 
     def animated_move(self, start, end, duration):
         frames = int(round(duration / self.parent.frame_dur))
