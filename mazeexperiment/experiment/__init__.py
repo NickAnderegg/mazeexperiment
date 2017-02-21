@@ -168,15 +168,15 @@ class Experiment():
         self.routine_timer  = core.CountdownTimer()
         logging.flush()
 
-        instructions = Instructions(self, self.exp_info)
-        instructions.begin_instructions()
+        # instructions = Instructions(self, self.exp_info)
+        # instructions.begin_instructions()
 
-        # self.prepare_visuals()
+        self.prepare_visuals()
         # self.load_latin_square()
         # self.load_trials()
-        # self.load_practice_trials()
+        self.load_practice_trials()
 
-        # practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
+        practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
 
         # sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials)
 
@@ -249,7 +249,7 @@ class Experiment():
 
         self.acc_feedback = visual.TextStim(
             win=self.window,    name='acc_feedback',text='',
-            font='Courier New', pos=(0, 0),         height=0.25,
+            font=CHINESE_FONT, pos=(0, 0),         height=0.25,
             wrapWidth=None,     color=(-1,-1,-1),   colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
             autoLog=False
@@ -257,7 +257,7 @@ class Experiment():
 
         self.message = visual.TextStim(
             win=self.window,    name='message',text='',
-            font='Courier New', pos=(0, 0),         height=0.25,
+            font=CHINESE_FONT, pos=(0, 0),         height=0.25,
             wrapWidth=None,     color=(-1,-1,-1),   colorSpace='rgb',
             opacity=1,          depth=0.0,          ori=0,
             autoLog=False

@@ -12,6 +12,10 @@ from datetime import datetime
 import time
 import os, sys
 
+TEXT_GET_READY = u'请准备'
+TEXT_FEEDBACK_CORRECT = u'正确！'
+TEXT_FEEDBACK_INCORRECT = u'错误！'
+
 class PracticeBlock():
     def __init__(self, parent, experiment, exp_info, practice_list):
         logging.debug(u'Entered PracticeBlock()')
@@ -41,7 +45,7 @@ class PracticeBlock():
     def begin_practice(self):
         logging.debug(u'Entered PracticeBlock().begin_practice()')
 
-        self.parent.display_message('GET READY', time=0.5)#3)
+        self.parent.display_message(TEXT_GET_READY, time=0.5)#3)
 
         for trial in self.trials:
             practice_trial = PracticeTrial(
@@ -54,7 +58,7 @@ class PracticeBlock():
             while not failed_trial:
                 trial = dict(trial_pairs)
 
-                self.parent.display_message('GET READY', time=0.5)#3)
+                self.parent.display_message(TEXT_GET_READY, time=0.5)#3)
 
                 practice_trial = PracticeTrial(
                     self.parent, self.experiment, self.exp_info, trial
@@ -133,12 +137,13 @@ class PracticeTrial():
 
                 self.show_trial_feedback(acc, target_pos)
 
-                if not acc and self.trial_num >= 7:
+                if not acc and self.trial_num >= 3:
                     self.clear_pair()
                     self.reset_displays()
 
                     self.window.color = (1, -1, -1)
-                    self.parent.display_message('INCORRECT!', time=2)
+                    self.parent.display_message(TEXT_FEEDBACK_INCORRECT, time=2)
+                    self.parent.display_message('RETRY TRIAL FROM BEGINNING...', time=3)
                     self.window.color = (1, 1, 1)
 
                     return False
@@ -149,7 +154,7 @@ class PracticeTrial():
             self.parent.experiment.nextEntry()
 
         self.window.color = (-1, 1, -1)
-        self.parent.display_message('CORRECT!', time=2)
+        self.parent.display_message(TEXT_FEEDBACK_CORRECT, time=2)
         self.window.color = (1, 1, 1)
 
         self.reset_displays()
@@ -173,17 +178,17 @@ class PracticeTrial():
             distractor_text.autoDraw = True
             correct_text.autoDraw = True
 
-            self.sentence_progress.height = 0.2
+            # self.sentence_progress.height = 0.2
             self.sentence_progress.pos = (0, 0.5)
             self.sentence_progress.alignHoriz = 'center'
 
             for i in range(5):
                 if self.trial_num <= 5:
-                    # correct_text.height = 0.35
-                    correct_text.bold = True
+                    correct_text.height = 0.30
+                    # correct_text.bold = True
                     self.flip(15)
-                    # correct_text.height = 0.25
-                    correct_text.bold = False
+                    correct_text.height = 0.25
+                    # correct_text.bold = False
                 self.flip(15)
 
             # distractor_text.opacity = 1.0
@@ -231,7 +236,7 @@ class PracticeTrial():
             distractor_text.height = 0.2
 
             correct_text.opacity = 1.0
-            distractor_text.opacity = 0.7
+            distractor_text.opacity = 0.6
 
         if self.trial_num <= 6:
             correct_text.opacity = 1.0
@@ -304,7 +309,7 @@ class PracticeTrial():
     def flip(self, count=1):
         # self.sentence_progress.draw()
         for i in range(count):
-            self.parent.check_abort()
+            self.check_abort()
             self.window.flip()
 
     # def check_abort(self):
@@ -339,3 +344,13 @@ class PracticeTrial():
             self.flip()
 
         self.window.logOnFlip(u'End show blank screen', logging.EXP)
+
+    def check_abort(self):
+        keys = event.getKeys(keyList=['escape'], modifiers=True)
+        if keys and (keys[0][0] == 'escape' and keys[0][1]['ctrl'] and keys[0][1]['alt']):
+            self.experiment.saveAsWideText('{}.csv'.format(self.parent.data_file_stem))
+            logging.flush()
+            # make sure everything is closed down
+            self.experiment.abort()
+            self.window.close()
+            core.quit()

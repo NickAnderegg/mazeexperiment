@@ -14,6 +14,10 @@ import os, sys
 
 from .srbox import SRBox
 
+TEXT_GET_READY = u'请准备'
+TEXT_FEEDBACK_CORRECT = u'正确！'
+TEXT_FEEDBACK_INCORRECT = u'错误！'
+
 class SentenceBlock():
     def __init__(self, parent, experiment, exp_info, sentence_list):
         logging.debug(u'Entered SentenceBlock()')
@@ -51,7 +55,7 @@ class SentenceBlock():
     def begin_block(self):
         logging.debug(u'Entered SentenceBlock().begin_block()')
 
-        self.parent.display_message('GET READY', time=3)
+        self.parent.display_message(TEXT_GET_READY, time=3)
         for sentence in self.sentences:
             sentence = self.prepare_trial(sentence)
             block_frame_rate = self.window.getActualFrameRate()
@@ -249,10 +253,10 @@ class SentenceTrial():
 
     def show_feedback(self, accuracy):
         if not accuracy:
-            self.acc_feedback.text = 'INCORRECT'
+            self.acc_feedback.text = TEXT_FEEDBACK_INCORRECT
             self.acc_feedback.color = (-0.25, -0.25, -0.25)
         else:
-            self.acc_feedback.text = 'CORRECT'
+            self.acc_feedback.text = TEXT_FEEDBACK_CORRECT
             self.acc_feedback.color = (-1, 1, -1)
 
         logging.info(u'{}: Set feedback to "{}"'.format(self.acc_feedback.name, self.acc_feedback.text))
