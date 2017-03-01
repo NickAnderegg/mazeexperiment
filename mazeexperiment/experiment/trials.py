@@ -19,7 +19,7 @@ TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
 class SentenceBlock():
-    def __init__(self, parent, experiment, exp_info, sentence_list):
+    def __init__(self, parent, experiment, exp_info, sentence_list, autorun=False):
         logging.debug(u'Entered SentenceBlock()')
 
         self.exp_info = exp_info
@@ -61,7 +61,8 @@ class SentenceBlock():
             block_frame_rate = self.window.getActualFrameRate()
             sentence_trial = SentenceTrial(
                 self.parent, self.experiment, self.exp_info,
-                sentence['target_sentence'], sentence['alt_sentence']
+                sentence['target_sentence'], sentence['alt_sentence'],
+                self.autorun
             )
             sentence_acc, sentence_time, fixation_length = sentence_trial.begin_trial()
             logging.flush()
@@ -96,7 +97,7 @@ class SentenceBlock():
         critical_index = 0
         count = 0
         for pair in sentence_pairs:
-            if pair[1] == u'＃':
+            if u'＃' in pair[1]:
                 target.append(pair[0])
                 alternative.append(distractor)
                 critical_index = count
@@ -112,7 +113,7 @@ class SentenceBlock():
         return u' | '.join(target), u' | '.join(alternative), critical_index
 
 class SentenceTrial():
-    def __init__(self, parent, experiment, exp_info, target_sentence, alternative_sentence):
+    def __init__(self, parent, experiment, exp_info, target_sentence, alternative_sentence, autorun=False):
         self.exp_info = exp_info
         zipped_sentence = zip(target_sentence.split(' | '), alternative_sentence.split(' | '))
         self.sentence = []
@@ -162,7 +163,7 @@ class SentenceTrial():
         logging.info(u'{}: Reset text'.format(self.text_right.name))
 
         self.show_blank(.5)
-        fixation_length = 2 + 3*random()
+        fixation_length = 1 + 2*random()
         self.show_fixation(fixation_length)
 
         sentence_correct = True
@@ -262,7 +263,7 @@ class SentenceTrial():
         logging.info(u'{}: Set feedback to "{}"'.format(self.acc_feedback.name, self.acc_feedback.text))
         self.window.logOnFlip(u'{}: Display feedback "{}"'.format(self.acc_feedback.name, self.acc_feedback.text), logging.EXP)
 
-        for i in range(160):
+        for i in range(90):
             self.acc_feedback.draw()
             self.flip()
 
