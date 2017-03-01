@@ -27,6 +27,8 @@ class SRBox():
                     self._box = None
                     self.port = None
                     continue
+        else:
+            self._box = serial.Serial(port, baudrate=self.baudrate, timeout=self.timeout)
 
         if self._box is None:
             raise RuntimeError('Could not connect to SRBox')
