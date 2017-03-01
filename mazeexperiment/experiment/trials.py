@@ -18,14 +18,17 @@ TEXT_GET_READY = u'请准备'
 TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
+SPEED_MULTIPLIER = 0.001
+
 class SentenceBlock():
-    def __init__(self, parent, experiment, exp_info, sentence_list):
+    def __init__(self, parent, experiment, exp_info, sentence_list, autorun=False):
         logging.debug(u'Entered SentenceBlock()')
 
         self.exp_info = exp_info
         self.sentence_list = sentence_list
         self.experiment = experiment
         self.parent = parent
+        self.autorun = autorun
 
         self.window = self.parent.window
         self.use_srbox = self.parent.use_srbox
@@ -55,13 +58,14 @@ class SentenceBlock():
     def begin_block(self):
         logging.debug(u'Entered SentenceBlock().begin_block()')
 
-        self.parent.display_message(TEXT_GET_READY, time=3)
+        self.parent.display_message(TEXT_GET_READY, time=3*SPEED_MULTIPLIER)
         for sentence in self.sentences:
             sentence = self.prepare_trial(sentence)
             block_frame_rate = self.window.getActualFrameRate()
             sentence_trial = SentenceTrial(
                 self.parent, self.experiment, self.exp_info,
-                sentence['target_sentence'], sentence['alt_sentence']
+                sentence['target_sentence'], sentence['alt_sentence'],
+                self.autorun
             )
             sentence_acc, sentence_time, fixation_length = sentence_trial.begin_trial()
             logging.flush()
@@ -96,7 +100,7 @@ class SentenceBlock():
         critical_index = 0
         count = 0
         for pair in sentence_pairs:
-            if pair[1] == u'＃':
+            if u'＃' in pair[1]:
                 target.append(pair[0])
                 alternative.append(distractor)
                 critical_index = count
@@ -112,7 +116,7 @@ class SentenceBlock():
         return u' | '.join(target), u' | '.join(alternative), critical_index
 
 class SentenceTrial():
-    def __init__(self, parent, experiment, exp_info, target_sentence, alternative_sentence):
+    def __init__(self, parent, experiment, exp_info, target_sentence, alternative_sentence, autorun=False):
         self.exp_info = exp_info
         zipped_sentence = zip(target_sentence.split(' | '), alternative_sentence.split(' | '))
         self.sentence = []
@@ -124,6 +128,7 @@ class SentenceTrial():
 
         self.experiment = experiment
         self.parent = parent
+        self.autorun = autorun
 
         self.window = self.parent.window
         self.text_left = self.parent.text_left
@@ -161,8 +166,8 @@ class SentenceTrial():
         logging.info(u'{}: Reset text'.format(self.text_left.name))
         logging.info(u'{}: Reset text'.format(self.text_right.name))
 
-        self.show_blank(.5)
-        fixation_length = 2 + 3*random()
+        self.show_blank(.5*SPEED_MULTIPLIER)
+        fixation_length = (1 + 2*random()) * SPEED_MULTIPLIER
         self.show_fixation(fixation_length)
 
         sentence_correct = True
@@ -172,7 +177,7 @@ class SentenceTrial():
         logging.exp(u'trial_clock: Reset time')
         self.trial_clock.reset()
         for pair in self.trial:
-            self.show_fixation(0.2)
+            self.show_fixation(0.2*SPEED_MULTIPLIER)
 
             target_pos = self.show_pair(pair)
 
@@ -262,7 +267,7 @@ class SentenceTrial():
         logging.info(u'{}: Set feedback to "{}"'.format(self.acc_feedback.name, self.acc_feedback.text))
         self.window.logOnFlip(u'{}: Display feedback "{}"'.format(self.acc_feedback.name, self.acc_feedback.text), logging.EXP)
 
-        for i in range(160):
+        for i in range(1+int(89*SPEED_MULTIPLIER)):
             self.acc_feedback.draw()
             self.flip()
 
@@ -287,6 +292,14 @@ class SentenceTrial():
 
     def get_response(self, target_pos):
         logging.exp(u'Waiting for response...')
+
+        if self.autorun:
+            logging.exp(u'Autorun activate. Sending automatic response...')
+            auto_response_time = 0.5 + random()
+            if randint(0,100) < 98:
+                return 1, auto_response_time, target_pos
+            else:
+                return 0, auto_response_time, int(not target_pos)
 
         if self.use_srbox:
             response, response_time = self.srbox.waitKeys(keyList=[1, 5], timeStamped=self.pair_clock)
