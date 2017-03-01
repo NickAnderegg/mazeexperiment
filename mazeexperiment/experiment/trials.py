@@ -19,7 +19,7 @@ TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
 class SentenceBlock():
-    def __init__(self, parent, experiment, exp_info, sentence_list, autorun=False):
+    def __init__(self, parent, experiment, exp_info, sentence_list):
         logging.debug(u'Entered SentenceBlock()')
 
         self.exp_info = exp_info
@@ -113,7 +113,7 @@ class SentenceBlock():
         return u' | '.join(target), u' | '.join(alternative), critical_index
 
 class SentenceTrial():
-    def __init__(self, parent, experiment, exp_info, target_sentence, alternative_sentence, autorun=False):
+    def __init__(self, parent, experiment, exp_info, target_sentence, alternative_sentence):
         self.exp_info = exp_info
         zipped_sentence = zip(target_sentence.split(' | '), alternative_sentence.split(' | '))
         self.sentence = []
