@@ -25,7 +25,7 @@
 # SOFTWARE.
 
 #add correct version number here
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __author__ = "Nick Anderegg"
 
 
@@ -38,7 +38,7 @@ import os, sys
 
 def main():
     exp_pwd = os.path.dirname(os.path.abspath(__file__)).decode(sys.getfilesystemencoding())
-    experiment.Experiment(pwd=exp_pwd)
+    experiment.Experiment(exp_name="Phonological_Activation_In_Chinese_Reading", pwd=exp_pwd)
 
 if __name__ == "__main__":
     main()
