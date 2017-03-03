@@ -172,13 +172,13 @@ class Experiment():
         # instructions.begin_instructions()
 
         self.prepare_visuals()
-        # self.load_latin_square()
-        # self.load_trials()
+        self.load_latin_square()
+        self.load_trials()
         self.load_practice_trials()
 
-        practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
+        # practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
 
-        # sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials)
+        sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials)
 
         logging.flush()
 
@@ -288,13 +288,13 @@ class Experiment():
         trials_file.close()
 
         first_row = self.participant_id % 20
-        # last_row = (first_row + 5) % 20
-        last_row = (first_row + 4) % 20
+        last_row = (first_row + 5) % 20
+        # last_row = (first_row + 4) % 20
 
         logging.info(u'Latin square first row: {}, last row: {}'.format(first_row, last_row-1))
 
         if first_row <= 16:
-            square = self.latin_square[first_row:first_row+4]
+            square = self.latin_square[first_row:first_row+5]
         else:
             square = self.latin_square[first_row:] + self.latin_square[:last_row]
 

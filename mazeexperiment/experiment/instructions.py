@@ -20,7 +20,7 @@ TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
 # Speed constants
-SPEED_MULTIPLIER = 0.1
+SPEED_MULTIPLIER = 0.01
 
 class Instructions():
     def __init__(self, parent, exp_info):
@@ -43,10 +43,9 @@ class Instructions():
 
         self.debug_mode = True
 
+    def begin_instructions(self):
         self.prepare_visuals()
         self.prepare_audio()
-
-    def begin_instructions(self):
         # self.paragraph.text = u'In this experiment, you will be asked to read sentences in Mandarin. '
         self.play_instructions(1)
         self.paragraph.text = (
@@ -289,18 +288,32 @@ class Instructions():
         self.paragraph.pos = (-0.8, 0)
         self.flipper(10 * SPEED_MULTIPLIER)
 
+        # example_sentence = [
+        #     [u"这种", u"ＸＸ"],
+        #     [u"人", u"峙"],
+        #     [u"用", u"肩"],
+        #     [u"这种", u"签订"],
+        #     [u"方法", u"温馨"],
+        #     [u"治", u"＃"],
+        #     [u",", u"*"],
+        #     [u"可谓", u"卑鄙"],
+        #     [u"是", u"韦"],
+        #     [u"以毒攻毒", u"无地自容"],
+        #     [u".", u"*"]
+        # ]
         example_sentence = [
-            [u"这种", u"ＸＸ"],
-            [u"人", u"峙"],
-            [u"用", u"肩"],
-            [u"这种", u"签订"],
-            [u"方法", u"温馨"],
-            [u"治", u"＃"],
-            [u",", u"*"],
-            [u"可谓", u"卑鄙"],
-            [u"是", u"韦"],
-            [u"以毒攻毒", u"无地自容"],
-            [u".", u"*"]
+            [u"她", u"Ｘ"],
+            [u"喜爱", u"日本"],
+            [u"她", u"住"],
+            [u"的", u"这"],
+            [u"小", u"在"],
+            [u"狗,", u"要,"],
+            [u"那", u"性"],
+            [u"小", u"院"],
+            [u"狗", u"还"],
+            [u"也", u"却"],
+            [u"诚然", u"人民"],
+            [u"可爱。", u"改革。"]
         ]
         self.paragraph.autoDraw = False
         self.flipper(2 * SPEED_MULTIPLIER)
@@ -455,13 +468,19 @@ class Instructions():
         self.text_right.autoDraw = True
         self.fixation.autoDraw = True
 
-        self.flipper(0.1 * SPEED_MULTIPLIER)
+        self.flipper(1 * SPEED_MULTIPLIER)
 
         # self.flipper(12 * SPEED_MULTIPLIER)
         if self.use_srbox:
             response = self.srbox.waitKeys(keyList=[1, 5])[0]
         else:
             response = event.waitKeys(keyList=['c', 'm'])[0]
+
+        self.text_left.autoDraw = False
+        self.text_right.autoDraw = False
+        self.fixation.autoDraw = False
+        self.message.autoDraw = False
+        self.paragraph.autoDraw = False
 
         if response in ('c', 1):
             self.begin_instructions()
@@ -482,14 +501,14 @@ class Instructions():
         if self.use_srbox:
             self.srbox.set_lights([0,0,0,0,0], update=True)
 
-        self._debug_srlight_state([0,0,0,0,0])
+        # self._debug_srlight_state([0,0,0,0,0])
 
 
     def _srlights_on(self):
         if self.use_srbox:
             self.srbox.set_lights(self.srlight_status['active'], update=True)
 
-        self._debug_srlight_state(self.srlight_status['active'])
+        # self._debug_srlight_state(self.srlight_status['active'])
 
     def set_srlights(self, which, on=True, mode='solid'):
         if not self.use_srbox and not self.debug_mode:
@@ -521,7 +540,7 @@ class Instructions():
             self.srlight_status['active'] = [0,0,int(on),0,0]
             self.srlight_status['mode'] = mode
 
-        self._debug_srlight_setting(which)
+        # self._debug_srlight_setting(which)
         self._srlights_on()
 
 

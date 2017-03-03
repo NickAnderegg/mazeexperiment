@@ -61,8 +61,7 @@ class SentenceBlock():
             block_frame_rate = self.window.getActualFrameRate()
             sentence_trial = SentenceTrial(
                 self.parent, self.experiment, self.exp_info,
-                sentence['target_sentence'], sentence['alt_sentence'],
-                self.autorun
+                sentence['target_sentence'], sentence['alt_sentence']
             )
             sentence_acc, sentence_time, fixation_length = sentence_trial.begin_trial()
             logging.flush()
