@@ -291,12 +291,12 @@ class Experiment():
 
         first_row = self.participant_id % 20
         # last_row = (first_row + 5) % 20
-        last_row = (first_row + 4) % 20
+        last_row = (first_row + 5) % 20
 
         logging.info(u'Latin square first row: {}, last row: {}'.format(first_row, last_row-1))
 
         if first_row <= 16:
-            square = self.latin_square[first_row:first_row+4]
+            square = self.latin_square[first_row:first_row+5]
         else:
             square = self.latin_square[first_row:] + self.latin_square[:last_row]
 
