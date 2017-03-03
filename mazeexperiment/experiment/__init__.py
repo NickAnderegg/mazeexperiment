@@ -287,18 +287,34 @@ class Experiment():
         self.trials = json.load(trials_file, encoding='utf-8')['sentences']
         trials_file.close()
 
-        first_row = self.participant_id % 20
-        last_row = (first_row + 5) % 20
+        print('Participant ID # {}'.format(self.participant_id))
+        print('Participant ID % 23 {}'.format((self.participant_id%46)))
+        print('Participant ID % 100 {}'.format((self.participant_id%100)))
+
+        participant_mod = self.participant_id# % 100
+
+        print('Participant MOD % 23 {}'.format((participant_mod%23)))
+
+        first_row = self.participant_id % 23
+        last_row = (first_row + 5) % 23
         # last_row = (first_row + 4) % 20
 
         logging.info(u'Latin square first row: {}, last row: {}'.format(first_row, last_row-1))
 
-        if first_row <= 16:
-            square = self.latin_square[first_row:first_row+5]
-        else:
-            square = self.latin_square[first_row:] + self.latin_square[:last_row]
+        square = []
+        # if first_row <= 16:
+        #     square = self.latin_square[first_row:first_row+5]
+        # else:
+        #     square = self.latin_square[first_row:] + self.latin_square[:last_row]
+
+        for i in range(5):
+            row_id = ((participant_mod % 46) + (i * (int((participant_mod - 1) / 46) + 1))) % 46
+            square.append(self.latin_square[row_id])
+            # print('       {}'.format(''.join(['{:>4}'.format((x+(i*23))) for x in range(1,24)])))
+            # print('Row {:>2}:{}'.format(row_id, ''.join(['{:>4}'.format(x) for x in self.latin_square[row_id]])))
 
         square = [int(x) for x in chain.from_iterable(square)]
+        # print('Square:', square)
 
         logging.info(u'Participant latin square: {}'.format(square))
 
@@ -313,10 +329,12 @@ class Experiment():
             else:
                 trial['condition'] = 4
 
+            # print(trial['sentence_number'], ':', trial['condition'], end=' | ')
+
         logging.flush()
 
     def load_latin_square(self):
-        square_file = u'{}{}data{}latinsquare.txt'.format(
+        square_file = u'{}{}data{}latinsquare_23.txt'.format(
             self.pwd, os.sep, os.sep
         )
 
