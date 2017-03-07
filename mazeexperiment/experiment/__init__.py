@@ -22,7 +22,7 @@ from .practicetrials import PracticeBlock
 __version__ = "1.0.0"
 
 class Experiment():
-    def __init__(self, exp_name=None, pwd=None, use_srbox=False):
+    def __init__(self, exp_name=None, pwd=None, use_srbox=False, autorun=False):
 
         if pwd is None:
             self.pwd = os.path.dirname(os.path.abspath(__file__)).decode(sys.getfilesystemencoding())
@@ -127,8 +127,10 @@ class Experiment():
             datetime.today().strftime('%Y-%m-%d')
         )
         # data file name stem
-        if int(self.exp_info['participant']) > 500:
-            data_file_stem = u'TESTFILE' + data_file_stem
+        if autorun:
+            data_file_stem = u'AUTORUN-DEBUG-DATA-' + data_file_stem
+        elif int(self.exp_info['participant']) > 500:
+            data_file_stem = u'TESTFILE-' + data_file_stem
 
         self.data_file_stem = u'{}{}{}{}{}'.format(
             self.pwd, os.sep,
@@ -178,7 +180,7 @@ class Experiment():
 
         practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
 
-        sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials)
+        sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials, autorun)
 
         logging.flush()
 
