@@ -18,7 +18,7 @@ TEXT_GET_READY = u'请准备'
 TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
-SPEED_MULTIPLIER = 0.001
+SPEED_MULTIPLIER = 1.0
 
 class SentenceBlock():
     def __init__(self, parent, experiment, exp_info, sentence_list, autorun=False):
@@ -294,7 +294,7 @@ class SentenceTrial():
         logging.exp(u'Waiting for response...')
 
         if self.autorun:
-            logging.exp(u'Autorun activate. Sending automatic response...')
+            logging.exp(u'Autorun active. Sending automatic response...')
             auto_response_time = 0.5 + random()
             if randint(0,100) < 98:
                 return 1, auto_response_time, target_pos

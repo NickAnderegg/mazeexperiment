@@ -16,14 +16,17 @@ TEXT_GET_READY = u'请准备'
 TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
+SPEED_MULTIPLIER = 1.0
+
 class PracticeBlock():
-    def __init__(self, parent, experiment, exp_info, practice_list):
+    def __init__(self, parent, experiment, exp_info, practice_list, autorun=False):
         logging.debug(u'Entered PracticeBlock()')
 
         self.exp_info = exp_info
         self.practice_list = practice_list
         self.experiment = experiment
         self.parent = parent
+        self.autorun = autorun
 
         self.window = self.parent.window
 
@@ -45,7 +48,7 @@ class PracticeBlock():
     def begin_practice(self):
         logging.debug(u'Entered PracticeBlock().begin_practice()')
 
-        self.parent.display_message(TEXT_GET_READY, time=0.5)#3)
+        self.parent.display_message(TEXT_GET_READY, time=1*SPEED_MULTIPLIER)#3)
 
         for trial in self.trials:
             practice_trial = PracticeTrial(
@@ -58,15 +61,15 @@ class PracticeBlock():
             while not failed_trial:
                 trial = dict(trial_pairs)
 
-                self.parent.display_message(TEXT_GET_READY, time=0.5)#3)
+                self.parent.display_message(TEXT_GET_READY, time=1*SPEED_MULTIPLIER)#3)
 
                 practice_trial = PracticeTrial(
-                    self.parent, self.experiment, self.exp_info, trial
+                    self.parent, self.experiment, self.exp_info, trial, self.autorun
                 )
                 failed_trial = practice_trial.begin_trial()
 
 class PracticeTrial():
-    def __init__(self, parent, experiment, exp_info, trial):
+    def __init__(self, parent, experiment, exp_info, trial, autorun=False):
         self.exp_info = exp_info
         self.trial_num = trial['sentence_number']
         self.sentence = []
@@ -78,6 +81,7 @@ class PracticeTrial():
 
         self.experiment = experiment
         self.parent = parent
+        self.autorun = autorun
 
         self.window = self.parent.window
         self.text_left = self.parent.text_left
@@ -116,8 +120,8 @@ class PracticeTrial():
         self.reset_displays()
 
         # self.show_blank(.5)
-        fixation_length = 2 + 3*random()
-        self.show_fixation(0.5)
+        fixation_length = (2 + 3*random())*SPEED_MULTIPLIER
+        self.show_fixation(0.5*SPEED_MULTIPLIER)
 
         sentence_correct = True
 
@@ -130,7 +134,7 @@ class PracticeTrial():
 
             acc = 0
             while acc == 0:
-                self.show_fixation(0.2)
+                self.show_fixation(0.2*SPEED_MULTIPLIER)
                 self.show_pair(pair, target_pos)
                 self.pair_clock.reset()
                 acc, response_time, response = self.get_response(target_pos)
@@ -142,8 +146,8 @@ class PracticeTrial():
                     self.reset_displays()
 
                     self.window.color = (1, -1, -1)
-                    self.parent.display_message(TEXT_FEEDBACK_INCORRECT, time=2)
-                    self.parent.display_message('RETRY TRIAL FROM BEGINNING...', time=3)
+                    self.parent.display_message(TEXT_FEEDBACK_INCORRECT, time=2*SPEED_MULTIPLIER)
+                    self.parent.display_message('RETRY TRIAL FROM BEGINNING...', time=3*SPEED_MULTIPLIER)
                     self.window.color = (1, 1, 1)
 
                     return False
@@ -154,7 +158,7 @@ class PracticeTrial():
             self.parent.experiment.nextEntry()
 
         self.window.color = (-1, 1, -1)
-        self.parent.display_message(TEXT_FEEDBACK_CORRECT, time=2)
+        self.parent.display_message(TEXT_FEEDBACK_CORRECT, time=2*SPEED_MULTIPLIER)
         self.window.color = (1, 1, 1)
 
         self.reset_displays()
@@ -186,10 +190,10 @@ class PracticeTrial():
                 if self.trial_num <= 5:
                     correct_text.height = 0.30
                     # correct_text.bold = True
-                    self.flip(15)
+                    self.flip(1+(14*SPEED_MULTIPLIER))
                     correct_text.height = 0.25
                     # correct_text.bold = False
-                self.flip(15)
+                self.flip(1+(14*SPEED_MULTIPLIER))
 
             # distractor_text.opacity = 1.0
 
@@ -290,6 +294,14 @@ class PracticeTrial():
         self.flip()
 
     def get_response(self, target_pos):
+        if self.autorun:
+            logging.exp(u'Autorun active. Sending automatic response...')
+            auto_response_time = 0.5 + random()
+            if randint(0,100) < 98:
+                return 1, auto_response_time, target_pos
+            else:
+                return 0, auto_response_time, int(not target_pos)
+
         if self.use_srbox:
             response, response_time = self.srbox.waitKeys(keyList=[1, 5], timeStamped=self.pair_clock)
             response = response[0]
