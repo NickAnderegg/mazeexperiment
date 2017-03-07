@@ -24,6 +24,7 @@ __version__ = "1.0.0"
 class Experiment():
     def __init__(self, exp_name=None, pwd=None, use_srbox=False, autorun=False):
 
+        self.autorun = autorun
         if pwd is None:
             self.pwd = os.path.dirname(os.path.abspath(__file__)).decode(sys.getfilesystemencoding())
         else:
@@ -178,9 +179,9 @@ class Experiment():
         self.load_trials()
         self.load_practice_trials()
 
-        practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
+        practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials, autorun=self.autorun)
 
-        sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials, autorun)
+        sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials, autorun=self.autorun)
 
         logging.flush()
 

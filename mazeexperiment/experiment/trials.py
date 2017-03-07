@@ -18,7 +18,7 @@ TEXT_GET_READY = u'请准备'
 TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
-SPEED_MULTIPLIER = 1.0
+SPEED_MULTIPLIER = 0.01
 
 class SentenceBlock():
     def __init__(self, parent, experiment, exp_info, sentence_list, autorun=False):
@@ -29,6 +29,11 @@ class SentenceBlock():
         self.experiment = experiment
         self.parent = parent
         self.autorun = autorun
+
+        if self.autorun:
+            logging.warning(u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
+            logging.data(u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
+            logging.exp(u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
 
         self.window = self.parent.window
         self.use_srbox = self.parent.use_srbox
@@ -91,6 +96,11 @@ class SentenceBlock():
 
         del trial['sentence']
         del trial['distractors']
+        if 'original_distractors' in trial:
+            del trial['original_distractors']
+
+        if self.autorun:
+            trial['AUTORUN_DATA'] = u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA'
 
         return trial
 
@@ -129,6 +139,11 @@ class SentenceTrial():
         self.experiment = experiment
         self.parent = parent
         self.autorun = autorun
+
+        if self.autorun:
+            logging.warning(u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
+            logging.data(u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
+            logging.exp(u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
 
         self.window = self.parent.window
         self.text_left = self.parent.text_left
@@ -204,6 +219,9 @@ class SentenceTrial():
 
             self.trial.addData('prev.pos', prev_pos)
             self.trial.addData('prev.resp', prev_resp)
+
+            if self.autorun:
+                self.trial.addData('TRIAL_AUTORUN', u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
 
             prev_pos = target_pos
             prev_resp = response

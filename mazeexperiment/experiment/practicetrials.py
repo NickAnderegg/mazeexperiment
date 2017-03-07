@@ -16,7 +16,7 @@ TEXT_GET_READY = u'请准备'
 TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
-SPEED_MULTIPLIER = 1.0
+SPEED_MULTIPLIER = 0.01
 
 class PracticeBlock():
     def __init__(self, parent, experiment, exp_info, practice_list, autorun=False):
@@ -27,6 +27,11 @@ class PracticeBlock():
         self.experiment = experiment
         self.parent = parent
         self.autorun = autorun
+
+        if self.autorun:
+            logging.warning(u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
+            logging.data(u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
+            logging.exp(u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
 
         self.window = self.parent.window
 
@@ -52,7 +57,7 @@ class PracticeBlock():
 
         for trial in self.trials:
             practice_trial = PracticeTrial(
-                self.parent, self.experiment, self.exp_info, trial
+                self.parent, self.experiment, self.exp_info, trial, self.autorun
             )
             trial_pairs = dict(trial)
 
@@ -82,6 +87,11 @@ class PracticeTrial():
         self.experiment = experiment
         self.parent = parent
         self.autorun = autorun
+
+        if self.autorun:
+            logging.warning(u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
+            logging.data(u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
+            logging.exp(u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
 
         self.window = self.parent.window
         self.text_left = self.parent.text_left
@@ -294,6 +304,7 @@ class PracticeTrial():
         self.flip()
 
     def get_response(self, target_pos):
+        logging.debug(u'Waiting for practice trial response')
         if self.autorun:
             logging.exp(u'Autorun active. Sending automatic response...')
             auto_response_time = 0.5 + random()
@@ -320,7 +331,7 @@ class PracticeTrial():
 
     def flip(self, count=1):
         # self.sentence_progress.draw()
-        for i in range(count):
+        for i in range(int(count)):
             self.check_abort()
             self.window.flip()
 
