@@ -38,7 +38,7 @@ import os, sys
 
 def main():
     exp_pwd = os.path.dirname(os.path.abspath(__file__)).decode(sys.getfilesystemencoding())
-    experiment.Experiment(exp_name="RPACR", pwd=exp_pwd, autorun=True)
+    experiment.Experiment(exp_name="RPACR", pwd=exp_pwd, autorun=False)
 
 if __name__ == "__main__":
     main()

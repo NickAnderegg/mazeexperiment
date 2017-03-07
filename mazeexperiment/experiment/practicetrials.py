@@ -16,7 +16,7 @@ TEXT_GET_READY = u'请准备'
 TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
-SPEED_MULTIPLIER = 0.01
+SPEED_MULTIPLIER = 1.0
 
 class PracticeBlock():
     def __init__(self, parent, experiment, exp_info, practice_list, autorun=False):
