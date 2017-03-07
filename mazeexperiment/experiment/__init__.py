@@ -168,15 +168,15 @@ class Experiment():
         self.routine_timer  = core.CountdownTimer()
         logging.flush()
 
-        # instructions = Instructions(self, self.exp_info)
-        # instructions.begin_instructions()
+        instructions = Instructions(self, self.exp_info)
+        instructions.begin_instructions()
 
         self.prepare_visuals()
         self.load_latin_square()
         self.load_trials()
         self.load_practice_trials()
 
-        # practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
+        practice_block = PracticeBlock(self, self.experiment, self.exp_info, self.practice_trials)
 
         sentence_block = SentenceBlock(self, self.experiment, self.exp_info, self.trials)
 
@@ -287,19 +287,19 @@ class Experiment():
         self.trials = json.load(trials_file, encoding='utf-8')['sentences']
         trials_file.close()
 
-        print('Participant ID # {}'.format(self.participant_id))
-        print('Participant ID % 23 {}'.format((self.participant_id%46)))
-        print('Participant ID % 100 {}'.format((self.participant_id%100)))
+        # print('Participant ID # {}'.format(self.participant_id))
+        # print('Participant ID % 23 {}'.format((self.participant_id%46)))
+        # print('Participant ID % 100 {}'.format((self.participant_id%100)))
 
         participant_mod = self.participant_id# % 100
 
-        print('Participant MOD % 23 {}'.format((participant_mod%23)))
+        # print('Participant MOD % 23 {}'.format((participant_mod%23)))
 
         first_row = self.participant_id % 23
         last_row = (first_row + 5) % 23
         # last_row = (first_row + 4) % 20
 
-        logging.info(u'Latin square first row: {}, last row: {}'.format(first_row, last_row-1))
+        # logging.info(u'Latin square first row: {}, last row: {}'.format(first_row, last_row-1))
 
         square = []
         # if first_row <= 16:
@@ -310,8 +310,8 @@ class Experiment():
         for i in range(5):
             row_id = ((participant_mod % 46) + (i * (int((participant_mod - 1) / 46) + 1))) % 46
             square.append(self.latin_square[row_id])
-            # print('       {}'.format(''.join(['{:>4}'.format((x+(i*23))) for x in range(1,24)])))
-            # print('Row {:>2}:{}'.format(row_id, ''.join(['{:>4}'.format(x) for x in self.latin_square[row_id]])))
+            logging.info(u'       {}'.format(''.join(['{:>4}'.format((x+(i*23))) for x in range(1,24)])))
+            logging.info(u'Row {:>2}:{}'.format(row_id, ''.join(['{:>4}'.format(x) for x in self.latin_square[row_id]])))
 
         square = [int(x) for x in chain.from_iterable(square)]
         # print('Square:', square)
