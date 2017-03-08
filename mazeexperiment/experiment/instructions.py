@@ -20,7 +20,7 @@ TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
 # Speed constants
-SPEED_MULTIPLIER = 0.01
+SPEED_MULTIPLIER = 1.0
 
 class Instructions():
     def __init__(self, parent, exp_info):

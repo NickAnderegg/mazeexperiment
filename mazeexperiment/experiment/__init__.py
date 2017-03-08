@@ -89,7 +89,7 @@ class Experiment():
         # self.get_session_info()
 
         self.window = visual.Window(
-            size=(1440/2, 900/2), fullscr=False, screen=0,
+            size=(1920, 1080), fullscr=True, screen=0,
             allowGUI=True, allowStencil=False,
             monitor=u'testMonitor', color=[1,1,1], colorSpace='rgb',
             blendMode='avg', useFBO=True, winType='pyglet')
