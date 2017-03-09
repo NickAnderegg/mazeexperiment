@@ -16,7 +16,7 @@ TEXT_GET_READY = u'请准备'
 TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
-SPEED_MULTIPLIER = 0.1
+SPEED_MULTIPLIER = 1.0
 
 class PracticeBlock():
     def __init__(self, parent, experiment, exp_info, practice_list, autorun=False):
@@ -145,9 +145,9 @@ class PracticeTrial():
         self.clear_pair()
         self.reset_displays()
 
-        # self.show_blank(.5)
-        fixation_length = (2 + 3*random())*SPEED_MULTIPLIER
-        self.show_fixation(0.5*SPEED_MULTIPLIER)
+        self.show_blank(0.5*SPEED_MULTIPLIER)
+        fixation_length = (1 + 1*random())*SPEED_MULTIPLIER
+        self.show_fixation(fixation_length)
 
         sentence_correct = True
 
@@ -172,8 +172,8 @@ class PracticeTrial():
                     self.reset_displays()
 
                     self.window.color = (1, -1, -1)
-                    self.parent.display_message(TEXT_FEEDBACK_INCORRECT, time=2*SPEED_MULTIPLIER)
-                    self.parent.display_message('RETRY TRIAL FROM BEGINNING...', time=3*SPEED_MULTIPLIER)
+                    self.parent.display_message(TEXT_FEEDBACK_INCORRECT, time=1*SPEED_MULTIPLIER)
+                    self.parent.display_message('RETRY TRIAL FROM BEGINNING...', time=2*SPEED_MULTIPLIER)
                     self.window.color = (1, 1, 1)
 
                     return False

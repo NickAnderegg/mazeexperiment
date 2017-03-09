@@ -182,7 +182,7 @@ class SentenceTrial():
         logging.info(u'{}: Reset text'.format(self.text_right.name))
 
         self.show_blank(.5*SPEED_MULTIPLIER)
-        fixation_length = (1 + 2*random()) * SPEED_MULTIPLIER
+        fixation_length = (1 + 1*random()) * SPEED_MULTIPLIER
         self.show_fixation(fixation_length)
 
         sentence_correct = True
