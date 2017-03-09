@@ -16,7 +16,7 @@ TEXT_GET_READY = u'请准备'
 TEXT_FEEDBACK_CORRECT = u'正确！'
 TEXT_FEEDBACK_INCORRECT = u'错误！'
 
-SPEED_MULTIPLIER = 1.0
+SPEED_MULTIPLIER = 0.1
 
 class PracticeBlock():
     def __init__(self, parent, experiment, exp_info, practice_list, autorun=False):
@@ -50,31 +50,46 @@ class PracticeBlock():
 
         self.begin_practice()
 
+        self.parent.message.text = u'End of practice trials! Press any key to continue to experiment...'
+        self.parent.message.color = (-1, -1, -1)
+        self.parent.message.draw()
+
+        self.window.flip()
+
+        if self.use_srbox:
+            response = self.srbox.waitKeys(keyList=[1, 2, 3, 4, 5])[0]
+        else:
+            response = event.waitKeys()[0]
+
+        return
+
     def begin_practice(self):
         logging.debug(u'Entered PracticeBlock().begin_practice()')
 
         self.parent.display_message(TEXT_GET_READY, time=1*SPEED_MULTIPLIER)#3)
 
         for trial in self.trials:
+            attempt = 1
             practice_trial = PracticeTrial(
-                self.parent, self.experiment, self.exp_info, trial, self.autorun
+                self.parent, self.experiment, self.exp_info, trial, self.autorun, attempt
             )
             trial_pairs = dict(trial)
 
             failed_trial = practice_trial.begin_trial()
 
             while not failed_trial:
+                attempt += 1
                 trial = dict(trial_pairs)
 
                 self.parent.display_message(TEXT_GET_READY, time=1*SPEED_MULTIPLIER)#3)
 
                 practice_trial = PracticeTrial(
-                    self.parent, self.experiment, self.exp_info, trial, self.autorun
+                    self.parent, self.experiment, self.exp_info, trial, self.autorun, attempt
                 )
                 failed_trial = practice_trial.begin_trial()
 
 class PracticeTrial():
-    def __init__(self, parent, experiment, exp_info, trial, autorun=False):
+    def __init__(self, parent, experiment, exp_info, trial, autorun=False, attempt=None):
         self.exp_info = exp_info
         self.trial_num = trial['sentence_number']
         self.sentence = []
@@ -87,6 +102,7 @@ class PracticeTrial():
         self.experiment = experiment
         self.parent = parent
         self.autorun = autorun
+        self.attempt = 1 if attempt is None else attempt
 
         if self.autorun:
             logging.warning(u'EXPERIMENT IN AUTORUN MODE DO NOT USE DATA')
@@ -171,6 +187,7 @@ class PracticeTrial():
         self.parent.display_message(TEXT_FEEDBACK_CORRECT, time=2*SPEED_MULTIPLIER)
         self.window.color = (1, 1, 1)
 
+        self.clear_pair()
         self.reset_displays()
 
         return True
@@ -241,18 +258,18 @@ class PracticeTrial():
         correct_text.text = u'' + pair['pair_correct']
         distractor_text.text = u'' + pair['pair_distractor']
 
-        if self.trial_num <= 2:
+        if self.trial_num <= 4 or self.attempt > 2:
             correct_text.color = (-1, 0.5, -1)
             distractor_text.color = (-1, -1, -1)
 
-        if self.trial_num <= 4:
+        if self.trial_num <= 7 or self.attempt > 1:
             correct_text.height = 0.25
             distractor_text.height = 0.2
 
             correct_text.opacity = 1.0
             distractor_text.opacity = 0.6
 
-        if self.trial_num <= 6:
+        if self.trial_num <= 10 or self.attempt > 1:
             correct_text.opacity = 1.0
             distractor_text.opacity = 0.9
 
