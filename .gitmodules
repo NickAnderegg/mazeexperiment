@@ -1,0 +1,3 @@
+[submodule "mazeexperiment/participant_data"]
+	path = mazeexperiment/participant_data
+	url = git@github.com:NickAnderegg/rpacr-mazeexperiment-participantdata.git
